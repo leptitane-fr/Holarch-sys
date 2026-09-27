@@ -1,0 +1,7 @@
+[package]
+name = "aiwos-rt"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+aiwos-abi = { path = "../../crates/abi" }

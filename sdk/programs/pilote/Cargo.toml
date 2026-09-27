@@ -1,0 +1,7 @@
+[package]
+name = "aiwos-pilote"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+aiwos-rt = { path = "../rt" }

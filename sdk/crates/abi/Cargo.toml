@@ -1,0 +1,6 @@
+[package]
+name = "aiwos-abi"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]

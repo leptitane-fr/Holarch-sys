@@ -1,0 +1,23 @@
+# Le nécessaire pour écrire un pilote d'Aiwos, servi par Aiwos lui-même
+# (« dev sdk ») dans la disposition de son dépôt. Un seul espace de
+# travail, qui contient tout : Cargo n'y calcule les noms de symboles
+# qu'avec des chemins relatifs, et deux dossiers différents donnent le même
+# ELF (avec le même Rust). Un nouveau pilote : copier programs/modele dans
+# un dossier voisin, changer son nom (paquet et [[bin]]), l'ajouter à
+# `members`. Compiler : construire.sh ou construire.ps1.
+[workspace]
+resolver = "3"
+members = ["crates/abi", "programs/rt", "programs/pilote", "programs/modele"]
+
+[workspace.package]
+version = "0.0.1"
+edition = "2024"
+
+[profile.release]
+panic = "abort"
+lto = true
+codegen-units = 1
+opt-level = "s"
+
+[profile.dev]
+panic = "abort"
