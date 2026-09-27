@@ -1,0 +1,13 @@
+[package]
+name = "lecteur-sd"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "lecteur-sd"
+test = false
+bench = false
+
+[dependencies]
+aiwos-rt = { path = "../rt" }
+aiwos-pilote = { path = "../pilote" }
