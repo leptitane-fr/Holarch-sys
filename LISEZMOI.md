@@ -34,6 +34,7 @@ l'accord de son utilisateur **devant l'écran**, puis publie le résultat.
 | `demandes/` | les pilotes qu'Aiwos demande |
 | `pilotes/` | les pilotes proposés |
 | `essais/` | les rapports d'essai signés par Aiwos |
+| `cles/` | les clés publiques d'attestation reconnues |
 
 ## Déjà réussi
 
