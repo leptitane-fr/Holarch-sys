@@ -1,0 +1,4 @@
+# Index d'aiwos-pilotes, recalculé par outils/index.py (ne pas écrire à la main).
+
+demande pci-8086-4df8 : demandé
+pilote lecteur-sd : en essai, attesté par chromebook-hp-x360-14b (BAR 0 en lecture, pannes 0) : ELF 2c7ad6ea5fd8c0bb…, Aiwos construite le 27/09/2026 à 14:58 (UTC)

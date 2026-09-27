@@ -1,0 +1,30 @@
+# À chaque poussée et demande de fusion : reconstruire chaque pilote avec
+# sdk/ (Rust 1.98.1, fixé par sdk/rust-toolchain.toml), publier les
+# empreintes, et vérifier l'index et les signatures des rapports d'essai.
+name: verifie
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verifie:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rust 1.98.1
+        run: |
+          rustup toolchain install 1.98.1 --profile minimal --target x86_64-unknown-none
+          rustc +1.98.1 --version
+      - name: Pas de binaire, pas de build.rs
+        run: |
+          ! find pilotes -name build.rs | grep .
+          ! find pilotes -type f \( -name '*.elf' -o -name '*.so' -o -name '*.a' -o -name '*.bin' \) | grep .
+      - name: Reconstruire chaque pilote
+        run: |
+          for p in pilotes/*/; do
+            n=$(basename "$p")
+            bash outils/construire.sh "$n" | tail -1 | tee -a empreintes.txt
+          done
+          echo "## Empreintes" >> "$GITHUB_STEP_SUMMARY"
+          sed 's/^/    /' empreintes.txt >> "$GITHUB_STEP_SUMMARY"
+      - name: Index et signatures
+        run: python3 outils/index.py --verifie

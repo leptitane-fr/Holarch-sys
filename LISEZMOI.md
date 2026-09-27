@@ -35,6 +35,8 @@ l'accord de son utilisateur **devant l'écran**, puis publie le résultat.
 | `pilotes/` | les pilotes proposés |
 | `essais/` | les rapports d'essai signés par Aiwos |
 | `cles/` | les clés publiques d'attestation reconnues |
+| `outils/` | `construire.sh <nom>` (empreinte reproductible), `verifie.py <rapport>` (signature), `index.py` (l'index, recalculé) |
+| `index.txt` | l'état de chaque demande et de chaque pilote, recalculé depuis les rapports signés |
 
 ## Déjà réussi
 
