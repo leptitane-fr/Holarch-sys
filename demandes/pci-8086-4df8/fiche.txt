@@ -1,0 +1,19 @@
+clé = pci:00:14.5
+abi = 1
+niveau = lecture d'abord ; écriture sur second accord à l'écran
+ressources = une BAR ; interruption : la ligne d'un appareil ACPI seulement
+dma = non (pas avant l'IOMMU)
+nécessaire = sdk/ ; méthode = guide/09-pilotes.md
+
+page 1/1
+PCI 00:14.5 · 8086:4df8 · classe 08 05 01, révision 0x01
+Sous-système : 8086:7270
+En-tête de type 0 (appareil) ; une seule fonction
+Commande 0x0400 : interruptions de ligne coupées
+État 0x0010 : capacités ;
+Zone 0 : mémoire 64 bits, 0xbedd7000, 4 Kio
+Interruption de ligne : broche INTD, ligne 255 (valeur du firmware ; Aiwos se sert des MSI ou de l'IO-APIC)
+Capacités :
+  0x80 gestion de l'énergie (01), v3 : en D0 ; D1 non, D2 non ; garde son état en D3hot
+  0x90 propre au fabricant (09), 20 octets
+ACPI : \_SB.PCI0.SDXC (« matériel acpi \_SB.PCI0.SDXC »)

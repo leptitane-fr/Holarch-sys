@@ -1,0 +1,5 @@
+appareil = lecteur de carte SD (SDHCI), Intel Jasper Lake 8086:4df8
+machine = Chromebook HP x360 14b-cb0
+état = demandé
+demandé le = 2026-09-27, accord 1 à l'écran d'Aiwos (empreinte de la fiche 2cff56a01ea92eff…)
+voulu = étape 1 (lecture : version, capacités, état de la carte), puis détection de la carte
