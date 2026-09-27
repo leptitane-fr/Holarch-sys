@@ -1,0 +1,10 @@
+aiwos = construite le 27/09/2026 à 14:58 (UTC)
+pilote = lecteur-sd
+version = 1
+empreinte-elf = 2c7ad6ea5fd8c0bb8b456b823d528ad2f3fb586d9a386fa734606429c931c592
+appareil = PCI 00:14.5 (8086:4df8)
+niveau = BAR 0 en lecture
+état = en marche ; en marche depuis 13 s ; pannes = 0
+résumé (texte du pilote) = 1	SDHCI v3 · carte absente · lecture seule
+attestation = 17e9eab6266b7bb2253b6cb8cfece3546c80433962d85d9c793a0ff7cafc2489
+signature = c03536a5e06ff9439833f1f59a6cb5222b25db446e9167dde903b18366a59fb007d7492be7bc56bd318c325df0c00c844663587fd441323e34afbb4d06f6f802

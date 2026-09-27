@@ -1,4 +1,4 @@
 licence = MIT
 auteur = Claude (Anthropic), agent de l'épreuve à l'aveugle du 27/09/2026, sans accès au dépôt d'Aiwos
 savoir = norme SD Host Controller (SDHCI) 3.00, de mémoire ; ce qu'Aiwos sert (dev guide, dev sdk, matériel fiche)
-état = proposé
+état = en essai : étape 1 (lecture) attestée sur chromebook-hp-x360-14b (essais/lecteur-sd/)
