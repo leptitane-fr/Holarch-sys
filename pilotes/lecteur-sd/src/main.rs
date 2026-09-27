@@ -1,8 +1,7 @@
-//! « modele » : le squelette d'un pilote d'Aiwos (famille A : un
-//! périphérique PCI à registres mémoire), à recopier pour en commencer un.
-//! Étape 1 du guide, « faire connaissance » : il lit, il n'écrit rien sur
-//! le matériel. Compilé à chaque construction, jamais embarqué : il ne
-//! peut pas se périmer. Contrat et méthode : docs/09-pilotes.md.
+//! « lecteur-sd » : lecteur de carte SD (contrôleur SDHCI, PCI 8086:4df8).
+//! Étape 1 du guide, « faire connaissance », version 2 : lecture seule,
+//! plus la surveillance de la carte (Present State 0x24, toutes les 200 ms).
+//! Contrat et méthode : guide/09-pilotes.md.
 //!
 //! Poignées de départ (convention du guide, § 3.3) : 1 registres,
 //! 2 interruption, 3 droit DMA, 4 canal de service, 5 journal.
@@ -13,26 +12,31 @@
 use core::fmt::Write;
 
 use aiwos_pilote::{Dma, Mmio, Reply, Served, parse_hex, respond, summary};
-use aiwos_rt::{self as rt, DeviceResources, FOREVER, Handle, log, signals};
+use aiwos_rt::{self as rt, DeviceResources, Handle, log, signals};
 
-// Le manifeste (IA6) : à adapter en recopiant le modèle. L'appareil
-// d'exemple est le lecteur SD du Chromebook. Pas encore d'« interruption »
-// pour un pilote chargé (IA6b) : sa place (poignée 2) reste muette.
+// Le manifeste (IA6). Niveau lecture : aucune écriture sur le matériel.
 aiwos_pilote::pilote!("nom = lecteur-sd
-version = 1
+version = 2
 abi = 1
 appareil = pci 8086:4df8
 niveau = lecture
 ressources = bar 0
 évènements = aucun
 écran-seul = aucun
-description = Lecteur de carte SD (SDHCI) : lit ses registres, n'écrit rien");
+description = Lecteur de carte SD (SDHCI) : lit ses registres, n'écrit rien ; surveille la carte");
 
 const MMIO: Handle = Handle(1);
 const IRQ: Handle = Handle(2);
 const DMA: Handle = Handle(3);
 const SERVICE: Handle = Handle(4);
 const JOURNAL: Handle = Handle(5);
+
+/// SDHCI Present State, décalage 0x24.
+const PRESENT_STATE: u32 = 0x24;
+const CARD_INSERTED: u32 = 1 << 16;
+const CARD_STABLE: u32 = 1 << 17;
+/// Bit 19 : 1 = écriture permise, 0 = protégée (SDHCI 3.00).
+const WRITE_ENABLED: u32 = 1 << 19;
 
 struct Driver {
     regs: Mmio,
@@ -42,6 +46,10 @@ struct Driver {
     /// suivantes).
     #[allow(dead_code)]
     dma: Option<Dma>,
+    /// Dernier état « carte insérée » stable vu.
+    card_present: bool,
+    insertions: u32,
+    removals: u32,
 }
 
 impl Driver {
@@ -50,7 +58,15 @@ impl Driver {
         let mut words = request.split(' ');
         match words.next().unwrap_or("") {
             // Pour le panneau Matériel : « niveau\tétat ».
-            "résumé" => summary(out, 1, format_args!("SDHCI v{} · carte {} · lecture seule", (self.regs.r16(0xFE) & 0xFF) + 1, if self.regs.r32(0x24) & (1 << 16) != 0 { "insérée" } else { "absente" })),
+            "résumé" => {
+                let present = self.regs.r32(PRESENT_STATE) & CARD_INSERTED != 0;
+                if present {
+                    summary(out, 1, format_args!("carte présente"));
+                } else {
+                    summary(out, 0, format_args!("carte absente"));
+                }
+            }
+            "carte" => self.card(out),
             "reg" => match words.next().and_then(parse_hex) {
                 Some(offset) => {
                     let _ = write!(out, "{offset:#06x} = {:#010x}", self.regs.r32(offset));
@@ -65,6 +81,14 @@ impl Driver {
             }
             _ => self.describe(out),
         }
+    }
+
+    /// « carte » : état actuel et compteurs d'insertions / retraits.
+    fn card(&self, out: &mut Reply) {
+        let ps = self.regs.r32(PRESENT_STATE);
+        let (present, stable, protected) = card_words(ps);
+        let _ = writeln!(out, "carte {present}, {stable}, {protected}");
+        let _ = write!(out, "insertions {}, retraits {}", self.insertions, self.removals);
     }
 
     /// « état » : identité, taille des registres, un premier registre.
@@ -104,13 +128,37 @@ impl Driver {
             "emplacement {slot} ; SDR50 {} ; SDR104 {} ; DDR50 {} ; multiplicateur d'horloge {}",
             oui(c1 & 1 != 0), oui(c1 & 2 != 0), oui(c1 & 4 != 0), (c1 >> 16) & 0xFF
         );
-        let ps = self.regs.r32(0x24);
+        let ps = self.regs.r32(PRESENT_STATE);
         let _ = write!(
             out,
             "état présent (0x24) : {ps:#010x} ; carte {} ; courant max (0x48) : {:#010x}",
-            if ps & (1 << 16) != 0 { "insérée" } else { "absente" },
+            if ps & CARD_INSERTED != 0 { "insérée" } else { "absente" },
             self.regs.r32(0x48)
         );
+    }
+
+    /// Lit Present State. Compte et journalise chaque insertion ou retrait
+    /// une fois l'état stable (bit 17) : le bit 16 n'est valable qu'alors.
+    fn poll_card(&mut self) {
+        let ps = self.regs.r32(PRESENT_STATE);
+        if ps == u32::MAX {
+            return;
+        }
+        if ps & CARD_STABLE == 0 {
+            return;
+        }
+        let present = ps & CARD_INSERTED != 0;
+        if present == self.card_present {
+            return;
+        }
+        self.card_present = present;
+        if present {
+            self.insertions = self.insertions.saturating_add(1);
+        } else {
+            self.removals = self.removals.saturating_add(1);
+        }
+        let (p, s, w) = card_words(ps);
+        log!(JOURNAL, "carte {p}, {s}, {w}");
     }
 
     fn on_interrupt(&mut self) {
@@ -118,6 +166,14 @@ impl Driver {
         let _ = rt::interrupt_ack(IRQ);
         self.interrupts += 1;
     }
+}
+
+fn card_words(ps: u32) -> (&'static str, &'static str, &'static str) {
+    (
+        if ps & CARD_INSERTED != 0 { "présente" } else { "absente" },
+        if ps & CARD_STABLE != 0 { "stable" } else { "instable" },
+        if ps & WRITE_ENABLED == 0 { "protégée en écriture" } else { "non protégée en écriture" },
+    )
 }
 
 fn main() {
@@ -132,7 +188,16 @@ fn main() {
             return;
         }
     };
-    let mut driver = Driver { regs, info, interrupts: 0, dma: None };
+    let ps = regs.r32(PRESENT_STATE);
+    let mut driver = Driver {
+        regs,
+        info,
+        interrupts: 0,
+        dma: None,
+        card_present: ps != u32::MAX && ps & CARD_INSERTED != 0,
+        insertions: 0,
+        removals: 0,
+    };
     // Exemple, pour plus tard : `Dma::new(DMA, 4096)`.
     let _ = DMA;
     log!(JOURNAL, "prêt ({:04x}:{:04x}), lecture seule", info.vendor_id, info.device_id);
@@ -143,9 +208,17 @@ fn main() {
             rt::wait_item(SERVICE, signals::READABLE | signals::PEER_CLOSED),
             rt::wait_item(IRQ, signals::INTERRUPT),
         ];
-        if rt::wait_many(&mut items, FOREVER).is_err() {
-            return;
+        // Échéance ~200 ms : interroger Present State sans boucle active
+        // (guide § 3.6, § 8 : TimedOut n'est pas une erreur fatale).
+        match rt::wait_many(&mut items, rt::deadline_in_ms(200)) {
+            Err(rt::Error::TimedOut) => {
+                driver.poll_card();
+                continue;
+            }
+            Err(_) => return,
+            Ok(_) => {}
         }
+        driver.poll_card();
         if items[1].observed & signals::INTERRUPT != 0 {
             driver.on_interrupt();
         }
