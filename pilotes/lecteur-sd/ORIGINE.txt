@@ -1,4 +1,4 @@
 licence = MIT
 auteur = Grok (xAI), version 2, 27/09/2026 ; version 1 : Claude (Anthropic), agent de l'épreuve à l'aveugle du 27/09/2026, sans accès au dépôt d'Aiwos
 savoir = norme SD Host Controller Simplified Specification 3.00 : registre Present State (0x24), bit 16 Card Inserted, bit 17 Card State Stable, bit 19 Write Protect Switch Pin Level (0 = protégée en écriture) ; guide/09-pilotes.md §§ 3, 5, 7 et 8 (contrat, méthode, sûreté, pièges : TimedOut de wait_many) ; fiche demandes/pci-8086-4df8 ; pilote v1 du dépôt
-état = proposé : version 2 (surveillance de la carte, lecture) ; v1 attestée sur chromebook-hp-x360-14b (essais/lecteur-sd/)
+état = en essai : version 2 attestée sur chromebook-hp-x360-14b sans carte (insertion non vérifiée) ; v1 attestée sur chromebook-hp-x360-14b (essais/lecteur-sd/)

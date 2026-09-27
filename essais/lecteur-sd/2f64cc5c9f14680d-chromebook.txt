@@ -1,0 +1,10 @@
+aiwos = construite le 27/09/2026 à 14:58 (UTC)
+pilote = lecteur-sd
+version = 2
+empreinte-elf = 2f64cc5c9f14680d4bfcfe2991e8f74ec7da9ce3318e5d58ccd2a2d7872b5732
+appareil = PCI 00:14.5 (8086:4df8)
+niveau = BAR 0 en lecture
+état = en marche ; en marche depuis 283 s ; pannes = 0
+résumé (texte du pilote) = 0	carte absente
+attestation = 17e9eab6266b7bb2253b6cb8cfece3546c80433962d85d9c793a0ff7cafc2489
+signature = 73b624f78aa8d9076b0420bdf75ee346dd479af3b60df544469816e3606121ce49b0c1103dae03cdc97120a8ac6a64936732ff84b7f33a0be593ba2bc39c7c00
