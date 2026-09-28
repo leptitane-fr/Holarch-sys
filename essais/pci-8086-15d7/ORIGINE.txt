@@ -1,0 +1,3 @@
+licence = MIT
+auteur = Vibe Code (Mistral AI) et contributeurs aiwos-pilotes
+savoir = Fiche technique Intel Ethernet Controller I219-LM (e1000e) ; documentation Intel Ethernet Controller Family ; registres standard PCI et e1000e ; fiche.txt du dépôt aiwos-pilotes pour pci-8086-15d7

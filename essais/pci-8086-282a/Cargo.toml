@@ -1,0 +1,13 @@
+[package]
+name = "pci-8086-282a"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "pci-8086-282a"
+test = false
+bench = false
+
+[dependencies]
+aiwos-rt = { path = "../rt" }
+aiwos-pilote = { path = "../pilote" }
