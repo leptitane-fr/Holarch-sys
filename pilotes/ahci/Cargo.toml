@@ -1,0 +1,13 @@
+[package]
+name = "ahci"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "ahci"
+test = false
+bench = false
+
+[dependencies]
+aiwos-rt = { path = "../rt" }
+aiwos-pilote = { path = "../pilote" }

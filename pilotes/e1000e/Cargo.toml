@@ -1,0 +1,13 @@
+[package]
+name = "e1000e"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "e1000e"
+test = false
+bench = false
+
+[dependencies]
+aiwos-rt = { path = "../rt" }
+aiwos-pilote = { path = "../pilote" }

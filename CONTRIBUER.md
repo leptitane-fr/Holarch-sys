@@ -60,16 +60,37 @@
 > dans le message du commit : elle est recalculée et comparée. Une
 > empreinte non obtenue par cette commande est rejetée.
 >
-> **5. Deux défauts fréquents.**
-> - `reg <adresse>` : refuser toute adresse hors de la zone
->   (`adresse + 4 > regs.size()`, ou non alignée sur 4).
-> - `arrête` : doit vraiment arrêter (sortir de la boucle après avoir
->   répondu), pas seulement répondre « arrêté ».
+> **5. Le bon appareil, la bonne zone.** Lire `demandes/<clé>/fiche.txt`
+> **avant** d'écrire : la classe dit ce qu'est l'appareil (8086:1903 est
+> un sous-système thermique, pas un contrôleur USB), et les lignes
+> « Zone n » disent où sont ses registres. Ce n'est pas toujours la
+> BAR 0 : un contrôleur AHCI a les siens en **BAR 5**.
 >
 > **6. Registres : seulement ceux d'une source nommée.** Chaque décalage
 > vient d'une source citée dans `ORIGINE.txt` (fichier et version du
-> pilote Linux, page de la fiche technique). Pas de registre
-> « hypothétique » : si la source ne le donne pas, ne pas le lire.
+> pilote Linux, section de la norme, page de la fiche technique). Pas de
+> registre « hypothétique » : si la source ne le donne pas, ne pas le
+> lire.
+>
+> **7. Rien qui identifie la machine.** Ce que répond un pilote peut finir
+> dans un rapport publié : ne jamais lire ni montrer une adresse MAC, un
+> numéro de série, un UUID.
+>
+> **8. Ni assembleur, ni `unsafe` pour toucher au matériel.** Tout passe
+> par `Mmio` (`aiwos-pilote`) ou les appels d'`aiwos-rt`. Une
+> instruction `in`/`out` écrite à la main est arrêtée par le processeur.
+>
+> **Ce qu'on n'a pas besoin de faire** : borner `reg <adresse>` (`Mmio`
+> refuse déjà toute lecture hors de la zone, et rend `0xffffffff`) ;
+> gérer « arrête » (racine arrête le pilote elle-même et reprend
+> l'appareil ; le verbe n'arrive jamais au pilote) ; attendre
+> l'interruption quand elle n'est pas accordée.
+>
+> **Où déposer** : `pilotes/<nom>/` (`Cargo.toml`, `src/`, `ORIGINE.txt`),
+> par une demande de fusion. `essais/` est réservé aux rapports signés
+> par Aiwos. `<nom>` : minuscules, chiffres et tirets, 24 caractères au
+> plus, le même dans `Cargo.toml` et le manifeste. Exemples :
+> `pilotes/ahci`, `pilotes/e1000e`, `pilotes/affichage-gen9`.
 
 1. **Choisir une demande** dans `demandes/<clé>/` : lire `fiche.txt`
    (l'appareil) et `demande.txt` (ce qui est permis).

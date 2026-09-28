@@ -1,3 +1,0 @@
-licence = MIT
-auteur = Vibe Code (Mistral AI) et contributeurs aiwos-pilotes
-savoir = Spécification PS/2 (IBM Personal System/2) ; contrôleur i8042 (Intel PNP0F13) ; documentation Linux kernel (drivers/input/serio/i8042.c) ; fiche.txt du dépôt aiwos-pilotes pour acpi-PNP0F13

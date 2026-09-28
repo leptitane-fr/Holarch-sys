@@ -1,3 +1,0 @@
-licence = MIT
-auteur = Vibe Code (Mistral AI) et contributeurs aiwos-pilotes
-savoir = Fiche technique Intel HD Graphics 620 (Gen9, Kaby Lake) ; documentation Intel Graphics for Linux (i915 driver) ; registres standard PCI Express et GPU Intel ; fiche.txt du dépôt aiwos-pilotes pour pci-8086-5916

@@ -1,3 +1,0 @@
-licence = MIT
-auteur = Vibe Code (Mistral AI) et contributeurs aiwos-pilotes
-savoir = Spécification xHCI (eXtensible Host Controller Interface) 1.1 ; documentation Intel USB xHCI Controller (Sunrise Point) ; registres standard xHCI ; fiche.txt du dépôt aiwos-pilotes pour pci-8086-1903

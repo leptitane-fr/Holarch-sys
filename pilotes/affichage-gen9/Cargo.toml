@@ -1,0 +1,13 @@
+[package]
+name = "affichage-gen9"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "affichage-gen9"
+test = false
+bench = false
+
+[dependencies]
+aiwos-rt = { path = "../rt" }
+aiwos-pilote = { path = "../pilote" }
