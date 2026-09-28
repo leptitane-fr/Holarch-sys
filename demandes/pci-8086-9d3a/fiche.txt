@@ -1,0 +1,18 @@
+clé = pci:00:16.0
+abi = 1
+niveau = lecture d'abord ; écriture sur second accord à l'écran
+ressources = une BAR ; interruption : la ligne d'un appareil ACPI seulement
+dma = non (pas avant l'IOMMU)
+nécessaire = sdk/ ; méthode = guide/09-pilotes.md
+
+PCI 00:16.0 · 8086:9d3a · classe 07 80 00, révision 0x21
+Sous-système : 1028:081c
+En-tête de type 0 (appareil) ; plusieurs fonctions
+Commande 0x0004 : maître du bus (DMA) ; interruptions de ligne permises
+État 0x0010 : capacités ;
+Zone 0 : mémoire 64 bits, 0xef256000, 4 Kio
+Interruption de ligne : broche INTA, ligne 255 (valeur du firmware ; Aiwos se sert des MSI ou de l'IO-APIC)
+Capacités :
+  0x50 gestion de l'énergie (01), v3 : en D0 ; D1 non, D2 non ; réveil (PME) depuis D3hot ; garde son état en D3hot
+  0x8c MSI (05) : coupées ; 64 bits ; 1 message(s) demandé(s), 1 accordé(s) ; masquage par message : non
+ACPI : \_SB.PCI0.HECI (« matériel acpi \_SB.PCI0.HECI »)

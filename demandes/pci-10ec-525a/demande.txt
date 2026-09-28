@@ -1,0 +1,5 @@
+appareil = lecteur de cartes Realtek RTS525A (PCIe), 10ec:525a
+machine = Dell Latitude 7490 (Core i5-7300U, Kaby Lake)
+état = demandé
+demandé le = 2026-09-28, accord 1 à l'écran d'Aiwos (empreinte de la fiche a564b370d3df839c…)
+voulu = étape 1 (lecture seule), puis à préciser par l'auteur du pilote

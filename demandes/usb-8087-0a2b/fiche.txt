@@ -1,0 +1,20 @@
+clé = usb:7
+abi = 1
+niveau = lecture d'abord ; écriture sur second accord à l'écran
+ressources = une BAR ; interruption : la ligne d'un appareil ACPI seulement
+dma = non (pas avant l'IOMMU)
+nécessaire = sdk/ ; méthode = guide/09-pilotes.md
+
+Port 7 · 8087:0a2b ·  
+Vitesse : pleine vitesse (12 Mbit/s) · norme USB 2.0 annoncée · voie 0 : paquets de 64 octets · emplacement 3
+Classe de l'appareil : Bluetooth (e0/01/01) · 1 configuration
+Configuration 1 : 2 interfaces, 100 mA, alimentation propre, réveil à distance
+  Interface 0 : Bluetooth (e0/01/01), 3 voies
+    voie 0x81 entrée · interruption · 64 octets · toutes les 1 ms
+    voie 0x02 sortie · en bloc · 64 octets
+    voie 0x82 entrée · en bloc · 64 octets
+  Interface 1 : Bluetooth (e0/01/01), 2 voies
+    voie 0x03 sortie · isochrone · 0 octets · toutes les 1 ms
+    voie 0x83 entrée · isochrone · 0 octets · toutes les 1 ms
+  (et 5 autres réglages d'interface, non détaillés)
+Pilote : aucun : Aiwos le voit et le décrit, sans s'en servir

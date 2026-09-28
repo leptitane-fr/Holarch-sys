@@ -1,0 +1,22 @@
+clé = pci:01:00.0
+abi = 1
+niveau = lecture d'abord ; écriture sur second accord à l'écran
+ressources = une BAR ; interruption : la ligne d'un appareil ACPI seulement
+dma = non (pas avant l'IOMMU)
+nécessaire = sdk/ ; méthode = guide/09-pilotes.md
+
+PCI 01:00.0 · 10ec:525a · classe ff 00 00, révision 0x01
+Sous-système : 1028:081c
+En-tête de type 0 (appareil) ; une seule fonction
+Commande 0x0000 : interruptions de ligne permises
+État 0x0010 : capacités ;
+Zone 1 : mémoire 32 bits, 0xef100000, 4 Kio
+Interruption de ligne : broche INTA, ligne 255 (valeur du firmware ; Aiwos se sert des MSI ou de l'IO-APIC)
+Capacités :
+  0x80 gestion de l'énergie (01), v3 : en D0 ; D1 oui, D2 oui ; réveil (PME) depuis D1 D2 D3hot D3froid
+  0x90 MSI (05) : coupées ; 64 bits ; 1 message(s) demandé(s), 1 accordé(s) ; masquage par message : non
+  0xb0 PCI Express (10), v2 : point terminal ; charge utile jusqu'à 512 octets ; lien : 5 GT/s ×1 (au plus 5 GT/s ×1) ; ASPM permis L0s et L1, en service L0s et L1
+Capacités étendues (espace de 4 Kio, table MCFG) :
+  0x100 rapport d'erreurs avancé (AER) (0001), v2
+  0x158 tolérance de latence (LTR) (0018), v1
+  0x160 sous-états L1 (L1SS) (001e), v1

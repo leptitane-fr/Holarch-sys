@@ -1,0 +1,5 @@
+appareil = audio Intel Sunrise Point-LP (HDA / Smart Sound), 8086:9d71
+machine = Dell Latitude 7490 (Core i5-7300U, Kaby Lake)
+état = demandé
+demandé le = 2026-09-28, accord 1 à l'écran d'Aiwos (empreinte de la fiche eccadc52bbfba6ea…)
+voulu = étape 1 (lecture seule), puis à préciser par l'auteur du pilote

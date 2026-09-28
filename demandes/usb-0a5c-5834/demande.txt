@@ -1,0 +1,5 @@
+appareil = Broadcom 5880 (lecteur de cartes à puce et d'empreintes, USB), 0a5c:5834
+machine = Dell Latitude 7490 (Core i5-7300U, Kaby Lake)
+état = demandé
+demandé le = 2026-09-28, accord 1 à l'écran d'Aiwos (empreinte de la fiche 2db61e1ad5088fbd…)
+voulu = étape 1 (lecture seule), puis à préciser par l'auteur du pilote

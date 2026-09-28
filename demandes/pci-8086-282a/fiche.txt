@@ -1,0 +1,24 @@
+clé = pci:00:17.0
+abi = 1
+niveau = lecture d'abord ; écriture sur second accord à l'écran
+ressources = une BAR ; interruption : la ligne d'un appareil ACPI seulement
+dma = non (pas avant l'IOMMU)
+nécessaire = sdk/ ; méthode = guide/09-pilotes.md
+
+PCI 00:17.0 · 8086:282a · classe 01 04 00, révision 0x21
+Sous-système : 1028:081c
+En-tête de type 0 (appareil) ; une seule fonction
+Commande 0x0007 : entrée-sortie ; mémoire ; maître du bus (DMA) ; interruptions de ligne permises
+État 0x02b0 : capacités ;
+Zone 0 : mémoire 32 bits, 0xef250000, 8 Kio
+Zone 1 : mémoire 32 bits, 0xef254000, 256 octets
+Zone 2 : entrée-sortie, 0xf090, 8 octets
+Zone 3 : entrée-sortie, 0xf080, 4 octets
+Zone 4 : entrée-sortie, 0xf060, 32 octets
+Zone 5 : mémoire 32 bits, 0xef253000, 2 Kio
+Interruption de ligne : broche INTA, ligne 255 (valeur du firmware ; Aiwos se sert des MSI ou de l'IO-APIC)
+Capacités :
+  0x80 MSI (05) : coupées ; 32 bits ; 1 message(s) demandé(s), 1 accordé(s) ; masquage par message : non
+  0x70 gestion de l'énergie (01), v3 : en D0 ; D1 non, D2 non ; réveil (PME) depuis D3hot ; garde son état en D3hot
+  0xa8 SATA (12)
+ACPI : \_SB.PCI0.SAT0 (« matériel acpi \_SB.PCI0.SAT0 »)

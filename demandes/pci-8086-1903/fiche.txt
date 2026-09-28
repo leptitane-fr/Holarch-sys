@@ -1,0 +1,19 @@
+clé = pci:00:04.0
+abi = 1
+niveau = lecture d'abord ; écriture sur second accord à l'écran
+ressources = une BAR ; interruption : la ligne d'un appareil ACPI seulement
+dma = non (pas avant l'IOMMU)
+nécessaire = sdk/ ; méthode = guide/09-pilotes.md
+
+PCI 00:04.0 · 8086:1903 · classe 11 80 00, révision 0x02
+Sous-système : 1028:081c
+En-tête de type 0 (appareil) ; une seule fonction
+Commande 0x0000 : interruptions de ligne permises
+État 0x0090 : capacités ;
+Zone 0 : mémoire 64 bits, 0xef240000, 32 Kio
+Interruption de ligne : broche INTA, ligne 255 (valeur du firmware ; Aiwos se sert des MSI ou de l'IO-APIC)
+Capacités :
+  0x90 MSI (05) : coupées ; 32 bits ; 1 message(s) demandé(s), 1 accordé(s) ; masquage par message : non
+  0xd0 gestion de l'énergie (01), v3 : en D0 ; D1 non, D2 non ; garde son état en D3hot
+  0xe0 propre au fabricant (09), 12 octets
+ACPI : \_SB.PCI0.B0D4 (« matériel acpi \_SB.PCI0.B0D4 »)

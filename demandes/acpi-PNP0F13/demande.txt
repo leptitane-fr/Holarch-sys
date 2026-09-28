@@ -1,0 +1,5 @@
+appareil = pavé tactile PS/2 (souris sur la seconde voie du contrôleur i8042, PNP0F13, interruption 12), _SB.PCI0.LPCB.PS2M
+machine = Dell Latitude 7490 (Core i5-7300U, Kaby Lake)
+état = demandé
+demandé le = 2026-09-28, accord 1 à l'écran d'Aiwos (empreinte de la fiche 5061d90ac05444c9…)
+voulu = étape 1 (lecture seule), puis à préciser par l'auteur du pilote

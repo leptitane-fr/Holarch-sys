@@ -1,0 +1,5 @@
+appareil = Ethernet Intel I219-LM (e1000e), 8086:15d7
+machine = Dell Latitude 7490 (Core i5-7300U, Kaby Lake)
+état = demandé
+demandé le = 2026-09-28, accord 1 à l'écran d'Aiwos (empreinte de la fiche e6a1f4f33ac7b271…)
+voulu = étape 1 (lecture : état du lien, vitesse, adresse MAC non publiée), puis trames (après DMA)

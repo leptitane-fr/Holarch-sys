@@ -1,0 +1,5 @@
+appareil = moteur de gestion Intel (ME/HECI), 8086:9d3a
+machine = Dell Latitude 7490 (Core i5-7300U, Kaby Lake)
+état = demandé
+demandé le = 2026-09-28, accord 1 à l'écran d'Aiwos (empreinte de la fiche 3e1e307de7c651c5…)
+voulu = étape 1 (lecture seule), puis à préciser par l'auteur du pilote

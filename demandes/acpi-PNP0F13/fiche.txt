@@ -1,0 +1,19 @@
+clé = acpi:\_SB.PCI0.LPCB.PS2M
+abi = 1
+niveau = lecture d'abord ; écriture sur second accord à l'écran
+ressources = une BAR ; interruption : la ligne d'un appareil ACPI seulement
+dma = non (pas avant l'IOMMU)
+nécessaire = sdk/ ; méthode = guide/09-pilotes.md
+
+\_SB.PCI0.LPCB.PS2M · appareil · déclaré dans DSDT (en 0x2a3ef)
+Parent : \_SB.PCI0.LPCB · _ADR 0x1f0000 (PCI 00:1f.0)
+Valeurs :
+  _CID = PNP0F13
+  _CRS (ressources) :
+    ligne historique (masque 0x1000), front montant
+  _PRS (ressources) :
+    ressource de genre 0x06
+    ligne historique (masque 0x1000), front montant
+    ressource de genre 0x07
+Méthodes : _HID (0 arg., 5 octets), _STA (0 arg., 2 octets)
+  (Aiwos ne les exécute pas : « matériel acpi table <rang> » et « iasl -d » sur le PC pour les lire.)

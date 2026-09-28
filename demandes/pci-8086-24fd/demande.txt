@@ -1,0 +1,5 @@
+appareil = Wi-Fi Intel Dual Band Wireless-AC 8265 (iwlwifi), 8086:24fd
+machine = Dell Latitude 7490 (Core i5-7300U, Kaby Lake)
+état = demandé
+demandé le = 2026-09-28, accord 3 à l'écran d'Aiwos (empreinte de la fiche 9cde5a98af0c6c09…)
+voulu = étape 1 (lecture : réveil de la carte, version du matériel), puis micrologiciel et réseaux voisins (après DMA)
