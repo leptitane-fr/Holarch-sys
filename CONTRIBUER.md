@@ -49,6 +49,15 @@
 > La poignée 2 (interruption) reste un canal muet quand l'interruption
 > n'est pas accordée : ne pas compter dessus.
 >
+> Deux refus du noyau, vus sur le Dell (échec au lancement, après
+> l'accord) :
+> - **une zone de moins de 4 Kio** (la ligne « Zone n » de la fiche) :
+>   refusée (`InvalidArgs`), car elle partagerait sa page de mémoire.
+>   Exemple : la zone 5 d'AHCI, 2 Kio (pilote `ahci`, en attente) ;
+> - **un affichage (classe 03) ou un pont (classe 06)** : jamais confié
+>   (`AccessDenied`) ; l'ouvrir couperait l'image de l'écran. Exemple :
+>   `affichage-gen9`, en attente.
+>
 > **4. Construire avant de proposer, et donner l'empreinte.**
 >
 > ```sh
