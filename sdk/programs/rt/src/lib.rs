@@ -1,4 +1,4 @@
-//! La bibliothèque des programmes d'Aiwos : les appels système sous une
+//! La bibliothèque des programmes de Holarch : les appels système sous une
 //! forme sûre et lisible, le point d'entrée, et de quoi écrire du texte
 //! sans allocation.
 //!
@@ -7,13 +7,16 @@
 
 #![no_std]
 
+#[cfg(feature = "tas")]
+pub mod tas;
+
 use core::arch::asm;
 use core::fmt;
 
-use aiwos_abi::sys;
-pub use aiwos_abi::{
+use holarch_abi::sys;
+pub use holarch_abi::{
     BootResources, CallArgs, DeviceOpened, DeviceResources, Error, TouchEvent, TouchPoint, FOREVER, KeyEvent, MAX_WAIT_ITEMS, MouseEvent, PciDevice, Received, WaitItem,
-    boot_handles, device_kind, device_level, key, net, rights, signals, socket, tile_level,
+    boot_handles, device_kind, device_level, key, net, rights, signals, socket, tile_level, touchpad_protocol,
 };
 
 /// Une poignée : un numéro valable dans ce seul programme.
@@ -218,6 +221,34 @@ pub fn device_open(device: Handle, level: u32, bars: u32) -> Result<DeviceOpened
     Ok(out)
 }
 
+/// D2 (docs/16) : prépare un appareil pour un pilote du système scellé
+/// (racine seulement : la poignée système).
+pub fn device_prepare(system: Handle, device: Handle, bars: u32) -> Result<holarch_abi::DevicePrepared> {
+    let mut out = holarch_abi::DevicePrepared::default();
+    check(unsafe {
+        syscall(sys::DEVICE_PREPARE, system.0 as u64, device.0 as u64, bars as u64,
+            &mut out as *mut holarch_abi::DevicePrepared as u64, 0, 0)
+    })?;
+    Ok(out)
+}
+
+/// D3 (docs/16) : une fenêtre de registres à adresse fixe (racine seulement).
+pub fn mmio_window(system: Handle, phys: u64, size: u64) -> Result<Handle> {
+    check(unsafe { syscall(sys::MMIO_WINDOW, system.0 as u64, phys, size, 0, 0, 0) }).map(|h| Handle(h as u32))
+}
+
+/// D3 (docs/16) : une interruption sur une ligne de l'IO-APIC (racine
+/// seulement) ; `mode` : `holarch_abi::line_mode`.
+pub fn interrupt_line(system: Handle, gsi: u32, mode: u32) -> Result<Handle> {
+    check(unsafe { syscall(sys::INTERRUPT_LINE, system.0 as u64, gsi as u64, mode as u64, 0, 0, 0) }).map(|h| Handle(h as u32))
+}
+
+/// IA7b : un domaine DMA confiné par l'IOMMU pour l'appareil des registres
+/// `registers` (ouverts en écriture).
+pub fn device_dma(registers: Handle) -> Result<Handle> {
+    check(unsafe { syscall(sys::DEVICE_DMA, registers.0 as u64, 0, 0, 0, 0, 0) }).map(|h| Handle(h as u32))
+}
+
 pub fn process_exit(code: i64) -> ! {
     unsafe { syscall(sys::PROCESS_EXIT, code as u64, 0, 0, 0, 0, 0) };
     loop {
@@ -260,6 +291,15 @@ pub fn memory_create_dma(dma: Handle, size: u64) -> Result<Handle> {
     check(unsafe { syscall(sys::MEMORY_CREATE_DMA, dma.0 as u64, size, 0, 0, 0, 0) }).map(|h| Handle(h as u32))
 }
 
+/// G6 : les adresses physiques des pages d'une mémoire partagée (depuis la
+/// page `first`, autant que `out` en tient), pour un pilote qui a le droit
+/// DMA ; rend le nombre total de pages.
+pub fn memory_frames(dma: Handle, memory: Handle, first: u64, out: &mut [u64]) -> Result<u64> {
+    check(unsafe {
+        syscall(sys::MEMORY_FRAMES, dma.0 as u64, memory.0 as u64, first, out.as_mut_ptr() as u64, out.len() as u64, 0)
+    })
+}
+
 /// Adresse physique d'une mémoire DMA, à donner au périphérique.
 pub fn memory_physical(memory: Handle) -> Result<u64> {
     check(unsafe { syscall(sys::MEMORY_PHYSICAL, memory.0 as u64, 0, 0, 0, 0, 0) })
@@ -289,7 +329,7 @@ pub fn system_query(system: Handle, what: u64, query: &str, buf: &mut [u8]) -> R
     .map(|n| n as usize)
 }
 
-/// Relance Aiwos sur le noyau du paquet de mise à jour signé contenu dans
+/// Relance Holarch sur le noyau du paquet de mise à jour signé contenu dans
 /// `package` (`len` octets), en transmettant `handover` au noyau suivant.
 /// Un réglage du noyau (poignée du système, droit d'écriture).
 /// Redémarre (0) ou éteint (1) la machine ; ne revient qu'en cas d'échec.

@@ -1,4 +1,4 @@
-# Index d'aiwos-pilotes, recalculé par outils/index.py (ne pas écrire à la main).
+# Index de Holarch-sys, recalculé par outils/index.py (ne pas écrire à la main).
 
 demande acpi-PNP0F13 : demandé
 demande pci-10ec-525a : demandé
@@ -22,5 +22,5 @@ demande usb-8087-0a2b : demandé
 pilote affichage-gen9 : proposé
 pilote ahci : proposé
 pilote e1000e : proposé
-pilote lecteur-sd : en essai, attesté par chromebook-hp-x360-14b (BAR 0 en lecture, pannes 0) : ELF 2c7ad6ea5fd8c0bb…, Aiwos construite le 27/09/2026 à 14:58 (UTC)
-pilote lecteur-sd : en essai, attesté par chromebook-hp-x360-14b (BAR 0 en lecture, pannes 0) : ELF 2f64cc5c9f14680d…, Aiwos construite le 27/09/2026 à 14:58 (UTC)
+pilote lecteur-sd : en essai, attesté par chromebook-hp-x360-14b (BAR 0 en lecture, pannes 0) : ELF 2c7ad6ea5fd8c0bb…, Holarch construite le 27/09/2026 à 14:58 (UTC)
+pilote lecteur-sd : en essai, attesté par chromebook-hp-x360-14b (BAR 0 en lecture, pannes 0) : ELF 2f64cc5c9f14680d…, Holarch construite le 27/09/2026 à 14:58 (UTC)

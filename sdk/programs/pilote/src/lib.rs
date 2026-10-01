@@ -1,4 +1,4 @@
-//! La bibliothèque des pilotes d'Aiwos (IA0, 25/09/2026) : ce que chaque
+//! La bibliothèque des pilotes de Holarch (IA0, 25/09/2026) : ce que chaque
 //! pilote réécrivait pour lui seul, en un seul endroit, sans allocation.
 //!
 //! - [`Mmio`] : une zone de registres, bornée ; attentes à échéance ;
@@ -23,7 +23,7 @@ pub mod i2c;
 use core::fmt::{self, Write};
 use core::ptr::{read_volatile, write_volatile};
 
-use aiwos_rt::{self as rt, DeviceResources, FOREVER, Handle, Text, signals};
+use holarch_rt::{self as rt, DeviceResources, FOREVER, Handle, Text, signals};
 
 /// La taille d'une réponse de service (celle qu'attend racine).
 pub type Reply = Text<4096>;
@@ -33,10 +33,10 @@ pub type Reply = Text<4096>;
 /// Le manifeste d'un pilote, écrit dans l'ELF même (section
 /// `.aiwos.pilote`, jamais chargée en mémoire) : il ne se sépare jamais du
 /// code, et la signature couvre les deux. Une ligne « clé = valeur » par
-/// champ ; Aiwos le vérifie avant tout accord (docs/10, IA6) :
+/// champ ; Holarch le vérifie avant tout accord (docs/10, IA6) :
 ///
 /// ```ignore
-/// aiwos_pilote::pilote!("nom = lecteur-sd
+/// holarch_pilote::pilote!("nom = lecteur-sd
 /// version = 1
 /// abi = 1
 /// appareil = pci 8086:4df8
@@ -51,7 +51,7 @@ macro_rules! pilote {
     ($text:literal) => {
         #[used]
         #[unsafe(link_section = ".aiwos.pilote")]
-        static AIWOS_PILOTE: [u8; $text.len()] = {
+        static MANIFESTE_PILOTE: [u8; $text.len()] = {
             let text: &[u8] = $text.as_bytes();
             let mut out = [0u8; $text.len()];
             let mut i = 0;

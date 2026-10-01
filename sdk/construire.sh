@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Compile les programmes du nécessaire (modele, et les vôtres) pour Aiwos :
+# Compile les programmes du nécessaire (modele, et les vôtres) pour Holarch :
 # Rust 1.98.1 (rust-toolchain.toml), cible x86_64-unknown-none, adresses fixes (user.ld). Le
 # chemin de ce dossier devient /aiwos dans l'ELF : deux dossiers
 # différents donnent le même programme (avec le même Rust).

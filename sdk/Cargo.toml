@@ -1,4 +1,4 @@
-# Le nécessaire pour écrire un pilote d'Aiwos, servi par Aiwos lui-même
+# Le nécessaire pour écrire un pilote de Holarch, servi par Holarch lui-même
 # (« dev sdk ») dans la disposition de son dépôt. Un seul espace de
 # travail, qui contient tout : Cargo n'y calcule les noms de symboles
 # qu'avec des chemins relatifs, et deux dossiers différents donnent le même

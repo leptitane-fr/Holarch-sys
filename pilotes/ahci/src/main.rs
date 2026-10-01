@@ -15,10 +15,10 @@
 
 use core::fmt::Write;
 
-use aiwos_pilote::{Mmio, Reply, Served, parse_hex, respond, summary};
-use aiwos_rt::{self as rt, FOREVER, Handle, log, signals};
+use holarch_pilote::{Mmio, Reply, Served, parse_hex, respond, summary};
+use holarch_rt::{self as rt, FOREVER, Handle, log, signals};
 
-aiwos_pilote::pilote!("nom = ahci
+holarch_pilote::pilote!("nom = ahci
 version = 1
 abi = 1
 appareil = pci 8086:282a
@@ -133,7 +133,7 @@ fn speed(generation: u32) -> &'static str {
 }
 
 fn main() {
-    let Some(info) = aiwos_pilote::resources(SERVICE) else {
+    let Some(info) = holarch_pilote::resources(SERVICE) else {
         log!(JOURNAL, "pas de description du périphérique");
         return;
     };

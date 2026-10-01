@@ -1,7 +1,12 @@
 [package]
-name = "aiwos-rt"
+name = "holarch-rt"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
-aiwos-abi = { path = "../../crates/abi" }
+holarch-abi = { path = "../../crates/abi" }
+
+[features]
+# Un tas pour les programmes qui en ont besoin (docs/15, N4-4) : une arène,
+# vidée entre deux demandes.
+tas = []

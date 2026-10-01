@@ -1,6 +1,6 @@
-# Le nécessaire pour écrire un pilote d'Aiwos
+# Le nécessaire pour écrire un pilote de Holarch
 
-Servi par Aiwos lui-même (`dev sdk`, puis `dev fichier <chemin>`) : chaque
+Servi par Holarch lui-même (`dev sdk`, puis `dev fichier <chemin>`) : chaque
 fichier vient du noyau signé, avec sa taille et son empreinte SHA-256. Le
 pont (outil `aiwos_sdk`) les vérifie avant de rien écrire.
 
@@ -8,9 +8,9 @@ pont (outil `aiwos_sdk`) les vérifie avant de rien écrire.
 
 | Chemin | Rôle |
 |---|---|
-| `crates/abi` | `aiwos-abi` : le contrat avec le noyau (appels système, structures, `VERSION`) |
-| `programs/rt` | `aiwos-rt` : la bibliothèque des programmes (appels, journal, `entry!`) |
-| `programs/pilote` | `aiwos-pilote` : la bibliothèque des pilotes (registres, service, DMA, contrôleur I2C) |
+| `crates/abi` | `holarch-abi` : le contrat avec le noyau (appels système, structures, `VERSION`) |
+| `programs/rt` | `holarch-rt` : la bibliothèque des programmes (appels, journal, `entry!`) |
+| `programs/pilote` | `holarch-pilote` : la bibliothèque des pilotes (registres, service, DMA, contrôleur I2C) |
 | `programs/modele` | le squelette d'un pilote (famille A, étape 1), à recopier |
 | `programs/user.ld` | la disposition en mémoire (0x400000, un segment par droit : W^X) |
 | `Cargo.toml` | l'espace de travail (tout le dossier) et les options de compilation |
@@ -41,11 +41,11 @@ dossiers donnent le même ELF, octet pour octet.
    `target/programs/x86_64-unknown-none/release/<nom>`.
 
 La méthode (étapes 0 à 6), le contrat exact et les règles : `dev guide`
-(outil `aiwos_guide`). Ce qu'Aiwos vérifie et refuse : `dev sûreté`.
+(outil `aiwos_guide`). Ce que Holarch vérifie et refuse : `dev sûreté`.
 
 ## Quand un programme tombe
 
-Aiwos garde un rapport de chaque faute ou panique (`pannes`, puis
+Holarch garde un rapport de chaque faute ou panique (`pannes`, puis
 `pannes <n>`) : l'instruction en cause, l'adresse visée, les adresses de
 retour trouvées dans la pile, les dernières lignes du programme au
 journal. Les programmes sont liés à une adresse fixe : ces adresses sont
@@ -59,7 +59,7 @@ ligne dans le source.
 
 ## Charger un pilote (IA6)
 
-`aiwos_pilote(<ELF>)` : le pont le signe (clé des pilotes du PC), Aiwos
+`aiwos_pilote(<ELF>)` : le pont le signe (clé des pilotes du PC), Holarch
 vérifie signature, ELF, manifeste, ABI, appareil, ressources et niveau,
 puis demande l'accord **à l'écran** : l'utilisateur appuie sur Entrée,
 dans les **deux minutes**. `pilotes` montre la demande en attente, puis

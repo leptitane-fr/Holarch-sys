@@ -12,7 +12,7 @@
 
 /// La version du contrat, augmentée à chaque changement qui touche un
 /// programme déjà compilé (numéro ou arguments d'un appel, forme d'une
-/// structure, ordre des poignées de départ). Aiwos la donne par `dev`.
+/// structure, ordre des poignées de départ). Holarch la donne par `dev`.
 pub const VERSION: u32 = 1;
 
 /// Numéros des appels système.
@@ -93,7 +93,7 @@ pub mod sys {
     /// (4 octets, poids faible d'abord).
     pub const SYSTEM_READ: u64 = 20;
     /// `system_relaunch(système, mémoire, taille, données, longueur)` :
-    /// relance Aiwos sur le noyau du paquet de mise à jour signé (`taille`
+    /// relance Holarch sur le noyau du paquet de mise à jour signé (`taille`
     /// octets) contenu dans la mémoire, en lui transmettant les données
     /// (256 octets au plus, relues par `system_read` sujet 2). Le noyau
     /// vérifie la signature et la version. Droit d'écriture sur le système
@@ -146,6 +146,43 @@ pub mod sys {
     pub const DEVICE_OPEN: u64 = 30;
     /// Comme PROCESS_CREATE, avec masque de droits conservés dans arg5.
     pub const PROCESS_CREATE_RESTRICTED: u64 = 31;
+    /// IA7b : device_dma(registres) → un domaine DMA confiné par l'IOMMU
+    /// pour l'appareil de ces registres (ouverts en écriture) ; à passer à
+    /// MEMORY_CREATE_DMA à la place du droit DMA. AccessDenied sans IOMMU.
+    pub const DEVICE_DMA: u64 = 32;
+    /// D2 (docs/16) : `device_prepare(système, appareil, masque_bar,
+    /// *mut DevicePrepared)`. Racine seulement (la poignée système) : prépare
+    /// l'appareil pour un pilote du **système scellé** (réveil, MSI/MSI-X,
+    /// passage direct dans l'IOMMU) et rend ses zones, son interruption et
+    /// le droit DMA. Une fois par appareil.
+    pub const DEVICE_PREPARE: u64 = 33;
+    /// D3 (docs/16) : `mmio_window(système, adresse, taille)` → une mémoire
+    /// de registres à adresse fixe (une fiche du catalogue : la page GPIO
+    /// de l'amplificateur d'un chipset). Racine seulement ; refusée si elle
+    /// touche la mémoire vive ou le premier Mo ; alignée sur 4 Kio, 64 Kio
+    /// au plus.
+    pub const MMIO_WINDOW: u64 = 34;
+    /// D3 (docs/16) : `interrupt_line(système, gsi, mode)` → une
+    /// interruption sur une ligne de l'IO-APIC (un appareil derrière un
+    /// bus, décrit par l'ACPI). Mode : bit 0 niveau (sinon front), bit 1
+    /// actif bas, bit 2 masquée jusqu'au premier acquittement (IA6f, niveau
+    /// seulement). Racine seulement.
+    pub const INTERRUPT_LINE: u64 = 35;
+    /// G6 (docs/18) : `memory_frames(dma, mémoire, début, tampon, capacité)`
+    /// → le nombre de pages de la mémoire ; écrit dans le tampon les
+    /// adresses physiques de ses pages, depuis la page `début` (autant
+    /// qu'il en tient). Pour un pilote (le droit DMA) : le pilote graphique
+    /// y lit les images partagées, sans copie. Avec un domaine d'IOMMU, les
+    /// pages y sont ouvertes à l'appareil (et gardées tant qu'il vit). La
+    /// mémoire d'un périphérique est refusée.
+    pub const MEMORY_FRAMES: u64 = 36;
+}
+
+/// Les modes de `interrupt_line`.
+pub mod line_mode {
+    pub const LEVEL: u32 = 1;
+    pub const ACTIVE_LOW: u32 = 2;
+    pub const MASKED: u32 = 4;
 }
 
 /// Niveau d'une tuile de l'écran : sa couleur.
@@ -308,7 +345,7 @@ pub struct CallArgs {
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]
 pub struct BootResources {
-    /// Zone d'écran confiée au shell : dimensions en pixels.
+    /// L'écran confié au compositeur (H1) : dimensions en pixels.
     pub screen_width: u32,
     pub screen_height: u32,
     /// Pixels par ligne en mémoire.
@@ -346,7 +383,7 @@ pub mod boot_handles {
     pub const KEYBOARD_IRQ: usize = 7;
     /// Ports 0x60 à 0x64 du contrôleur clavier.
     pub const KEYBOARD_PORTS: usize = 8;
-    /// Mémoire de la zone d'écran du shell.
+    /// Mémoire de l'image de l'écran (au compositeur, H1).
     pub const SCREEN: usize = 9;
     pub const IMAGE_RESEAU: usize = 10;
     /// Le droit de lire l'état du système.
@@ -366,7 +403,39 @@ pub mod boot_handles {
     pub const IMAGE_PAVE: usize = 20;
     pub const IMAGE_GRAPHIQUE: usize = 21;
     pub const IMAGE_SON: usize = 22;
-    pub const COUNT: usize = 23;
+    /// Le service des fichiers (N1e, docs/12). Une image vide (un octet)
+    /// quand il n'y en a pas : racine ne le lance pas.
+    pub const IMAGE_FICHIERS: usize = 23;
+    /// Les tables AML lues hors du noyau (N4-4, docs/15). Une image vide
+    /// quand il n'y en a pas.
+    pub const IMAGE_ACPI: usize = 24;
+    /// Le compositeur, seul maître de l'écran et des entrées (H1,
+    /// docs/17). Une image vide quand il n'y en a pas.
+    pub const IMAGE_COMPOSITEUR: usize = 25;
+    /// Le second client du compositeur, pour l'essai au banc (H1b,
+    /// « lance essai-fenetre »). Une image vide quand il n'y en a pas.
+    pub const IMAGE_ESSAI_FENETRE: usize = 26;
+    /// Les fichiers de l'interface (H2, docs/17), du système scellé : les
+    /// polices (`/interface/texte.ttf`, `/interface/titre.ttf`), le fond
+    /// d'écran (`/interface/fond.qoi`). Des mémoires en lecture seule,
+    /// projetables : la longueur du fichier (u64, petit-boutiste), puis
+    /// ses octets. Une longueur nulle quand il n'y en a pas.
+    pub const POLICE_TEXTE: usize = 27;
+    pub const POLICE_TITRE: usize = 28;
+    pub const FOND_ECRAN: usize = 29;
+    /// La galerie de la boîte à outils, pour l'essai au banc (H3,
+    /// « lance galerie »). Une image vide quand il n'y en a pas.
+    pub const IMAGE_GALERIE: usize = 30;
+    /// La police d'icônes de l'interface (H4, `/interface/icones.ttf`),
+    /// comme les polices : sa longueur, puis ses octets.
+    pub const ICONES: usize = 31;
+    /// L'atelier, une tâche pour l'essai au banc (H5, « lance atelier »).
+    /// Une image vide quand il n'y en a pas.
+    pub const IMAGE_ATELIER: usize = 32;
+    /// Fusion, l'interface d'administration (docs/20) : racine la lance
+    /// au lieu du shell de Holarch. Une image vide quand il n'y en a pas.
+    pub const IMAGE_FUSION: usize = 33;
+    pub const COUNT: usize = 34;
 }
 
 /// Messages suivants du démarrage de « racine », un par périphérique confié
@@ -392,8 +461,18 @@ pub struct DeviceResources {
     /// registres GGC (0x50) et BDSM (0xC0, génération 11) de l'espace de
     /// configuration,
     /// l'adresse physique de l'image du firmware (bas, haut), et celle de
-    /// la fenêtre sur la GGTT (BAR 2, bas, haut).
+    /// la fenêtre sur la GGTT (BAR 2, bas, haut). Pavé tactile : son
+    /// protocole (`touchpad_protocol`), puis le registre de son descripteur
+    /// HID (HID sur I2C).
     pub extra: [u32; 6],
+}
+
+/// Le protocole d'un pavé tactile (`DeviceResources::extra[0]`).
+pub mod touchpad_protocol {
+    /// Celui d'Elan (le Chromebook).
+    pub const ELAN: u32 = 0;
+    /// HID sur I2C, en mode « Precision Touchpad ».
+    pub const HID_I2C: u32 = 1;
 }
 
 pub mod device_kind {
@@ -430,6 +509,20 @@ pub mod device_level {
 pub struct DeviceOpened {
     pub sizes: [u64; 6],
     pub handles: [u32; 6],
+}
+
+/// Résultat de device_prepare (D2, docs/16) : taille et poignée de chaque
+/// zone demandée (zéro sinon), l'interruption, le droit DMA (80 octets).
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Default)]
+pub struct DevicePrepared {
+    pub sizes: [u64; 6],
+    pub memories: [u32; 6],
+    pub interrupt: u32,
+    pub dma: u32,
+    /// D4 : un affichage : l'adresse physique de l'image du firmware ; 0
+    /// sinon.
+    pub image: u64,
 }
 
 /// Un doigt sur le pavé tactile (8 octets).
@@ -485,10 +578,19 @@ pub struct MouseEvent {
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct KeyEvent {
     pub kind: u32,
-    /// Pour `key::CHAR` : le caractère (Unicode).
+    /// Pour `key::CHAR` : le caractère (Unicode). Dans les bits hauts, les
+    /// touches de modification tenues ([`key::MODIFICATEURS`]).
     pub value: u32,
 }
 
+/// Les genres de touches, et les touches de modification (H3, docs/17).
+///
+/// Les modificateurs vont dans les bits hauts de `value` (un caractère
+/// tient en 21 bits). Pour une touche spéciale (flèche, Tab…), tous ceux
+/// qui sont tenus. Pour un caractère, seulement s'il y a Ctrl ou Alt (un
+/// raccourci : Ctrl+C, Alt+F) ; Maj ou AltGr seuls ont déjà choisi le
+/// caractère (« A », « € »), ils ne sont pas redits : un programme qui
+/// lit `value` comme un caractère n'y voit que ce qui a été tapé.
 pub mod key {
     pub const CHAR: u32 = 1;
     pub const ENTER: u32 = 2;
@@ -502,4 +604,48 @@ pub mod key {
     pub const DELETE: u32 = 10;
     pub const HOME: u32 = 11;
     pub const END: u32 = 12;
+    pub const PAGE_UP: u32 = 13;
+    pub const PAGE_DOWN: u32 = 14;
+    /// La touche de Holarch : Recherche (le Chromebook), Windows (un PC).
+    /// Le compositeur la donne toujours au shell (le dock, H4).
+    pub const HOLARCH: u32 = 15;
+
+    /// Maj tenue.
+    pub const MAJ: u32 = 1 << 29;
+    /// Ctrl tenue.
+    pub const CTRL: u32 = 1 << 30;
+    /// Alt (celle de gauche ; celle de droite est AltGr) tenue.
+    pub const ALT: u32 = 1 << 31;
+    pub const MODIFICATEURS: u32 = MAJ | CTRL | ALT;
+}
+
+impl KeyEvent {
+    /// Le caractère tapé, s'il en est un et qu'il n'est pas un raccourci
+    /// (ni Ctrl ni Alt).
+    pub fn caractere(&self) -> Option<char> {
+        if self.kind == key::CHAR && self.value & key::MODIFICATEURS == 0 { char::from_u32(self.value) } else { None }
+    }
+
+    /// Le caractère de la touche, raccourci ou non (« c » de Ctrl+C).
+    pub fn lettre(&self) -> Option<char> {
+        if self.kind == key::CHAR { char::from_u32(self.value & !key::MODIFICATEURS) } else { None }
+    }
+
+    /// Un raccourci : Ctrl + `c` (sans Alt ; Maj tenue ou non ; la lettre
+    /// en minuscule ou en majuscule).
+    pub fn ctrl_et(&self, c: char) -> bool {
+        self.ctrl() && !self.alt() && self.lettre().is_some_and(|l| l.eq_ignore_ascii_case(&c))
+    }
+
+    pub fn maj(&self) -> bool {
+        self.value & key::MAJ != 0
+    }
+
+    pub fn ctrl(&self) -> bool {
+        self.value & key::CTRL != 0
+    }
+
+    pub fn alt(&self) -> bool {
+        self.value & key::ALT != 0
+    }
 }

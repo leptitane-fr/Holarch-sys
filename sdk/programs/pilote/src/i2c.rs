@@ -14,7 +14,7 @@
 
 use core::ptr::{read_volatile, write_volatile};
 
-use aiwos_rt as rt;
+use holarch_rt as rt;
 
 const IC_CON: u32 = 0x00;
 const IC_TAR: u32 = 0x04;
@@ -273,7 +273,7 @@ impl Controller {
         }
         // Une transaction restée en suspens (le maître garde le bus, file
         // d'émission vide) ne s'arrête jamais d'elle-même. Relevé le 25/09 :
-        // une relance d'Aiwos au milieu d'un échange avec le pavé. On
+        // une relance de Holarch au milieu d'un échange avec le pavé. On
         // l'abandonne, puis on arrête.
         self.regs.w32(IC_ENABLE, ENABLE_ON);
         sleep_us(100);

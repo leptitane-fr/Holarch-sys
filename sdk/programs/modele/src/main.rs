@@ -1,4 +1,4 @@
-//! « modele » : le squelette d'un pilote d'Aiwos (famille A : un
+//! « modele » : le squelette d'un pilote de Holarch (famille A : un
 //! périphérique PCI à registres mémoire), à recopier pour en commencer un.
 //! Étape 1 du guide, « faire connaissance » : il lit, il n'écrit rien sur
 //! le matériel. Compilé à chaque construction, jamais embarqué : il ne
@@ -12,13 +12,13 @@
 
 use core::fmt::Write;
 
-use aiwos_pilote::{Dma, Mmio, Reply, Served, parse_hex, respond, summary};
-use aiwos_rt::{self as rt, DeviceResources, FOREVER, Handle, log, signals};
+use holarch_pilote::{Dma, Mmio, Reply, Served, parse_hex, respond, summary};
+use holarch_rt::{self as rt, DeviceResources, FOREVER, Handle, log, signals};
 
 // Le manifeste (IA6) : à adapter en recopiant le modèle. L'appareil
 // d'exemple est le lecteur SD du Chromebook. Pas encore d'« interruption »
 // pour un pilote chargé (IA6b) : sa place (poignée 2) reste muette.
-aiwos_pilote::pilote!("nom = modele
+holarch_pilote::pilote!("nom = modele
 version = 1
 abi = 1
 appareil = pci 8086:4df8
@@ -87,7 +87,7 @@ impl Driver {
 }
 
 fn main() {
-    let Some(info) = aiwos_pilote::resources(SERVICE) else {
+    let Some(info) = holarch_pilote::resources(SERVICE) else {
         log!(JOURNAL, "pas de description du périphérique");
         return;
     };

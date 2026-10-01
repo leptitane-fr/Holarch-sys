@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Relais des demandes de pilotes acceptées à l'écran d'Aiwos (docs/11, D2).
+"""Relais des demandes de pilotes acceptées à l'écran de Holarch (docs/11, D2).
 
 Lit chaque fiche par le pont local (« demande <clé> texte »), vérifie que son
-SHA-256 commence par l'empreinte montrée par Aiwos, et l'écrit dans
+SHA-256 commence par l'empreinte montrée par Holarch, et l'écrit dans
 demandes/<dossier>/fiche.txt, à l'octet près. Écrit aussi demande.txt.
 Rien n'est poussé : relire, puis git commit / git push.
 
@@ -68,7 +68,7 @@ def main():
         titre = next((l for l in fiche.splitlines()[7:] if l.strip()), cle)
         with open(os.path.join(d, "demande.txt"), "w", encoding="utf-8", newline="\n") as f:
             f.write(f"appareil = {titre}\nmachine = {machine}\nétat = demandé\n"
-                    f"demandé le = {jour}, accord {accord} à l'écran d'Aiwos (empreinte de la fiche {empreinte}…)\n"
+                    f"demandé le = {jour}, accord {accord} à l'écran de Holarch (empreinte de la fiche {empreinte}…)\n"
                     f"voulu = étape 1 (lecture seule), puis à préciser par l'auteur du pilote\n")
         print(f"{cle} : {os.path.relpath(d, DEPOT)} ({len(octets)} octets, {h[:16]})")
 

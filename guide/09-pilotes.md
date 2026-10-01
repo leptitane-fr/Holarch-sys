@@ -1,6 +1,6 @@
-# 09 — Écrire un pilote pour Aiwos
+# 09 — Écrire un pilote pour Holarch
 
-Ce guide dit comment un pilote d'Aiwos est bâti, et comment en écrire un
+Ce guide dit comment un pilote de Holarch est bâti, et comment en écrire un
 nouveau vite et sans casse. Il est tiré des pilotes qui existent et de
 leur histoire (clavier, USB, Wi-Fi, eMMC, pavé tactile, graphique, son :
 voir le journal).
@@ -9,12 +9,12 @@ voir le journal).
 codage, **y compris sans accès au dépôt** : toutes les valeurs utiles
 (numéros d'appels système, ordre des poignées, formats des messages,
 limites) sont écrites ici. Il est aussi le texte que sert la commande
-`dev guide` d'Aiwos (feuille de route : [10 — Aiwos interrogeable par les
-IA](10-aiwos-interrogeable.md), étape IA2) ; il doit donc rester
+`dev guide` de Holarch (feuille de route : [10 — Holarch interrogeable par les
+IA](10-holarch-interrogeable.md), étape IA2) ; il doit donc rester
 **autonome** : ne pas renvoyer à un fichier du dépôt pour une information
 indispensable.
 
-**La source de vérité**, c'est Aiwos en marche : ce qu'il répond
+**La source de vérité**, c'est Holarch en marche : ce qu'il répond
 (`aide`, `matériel …`, les réponses des pilotes) l'emporte sur ce texte
 en cas de désaccord. Le signaler alors, pour corriger le guide.
 
@@ -66,7 +66,7 @@ Quatre idées suffisent :
   voit que les poignées reçues à sa naissance. Il ne peut ni toucher un
   autre périphérique, ni lire la mémoire d'un autre programme. S'il fait
   une faute, **lui seul** est arrêté (« « X » arrêté : … Le reste
-  continue. » au journal), et Aiwos garde un rapport de panne (`pannes`,
+  continue. » au journal), et Holarch garde un rapport de panne (`pannes`,
   § 3.9).
 - **Le noyau ne sait rien des protocoles.** Il donne des *accès* : une
   zone de registres, une interruption, le droit de créer de la mémoire
@@ -78,7 +78,7 @@ Quatre idées suffisent :
   le canal de service du pilote `son`).
 - **Un pilote parle en texte à racine** (demandes et réponses lisibles
   par un humain), et **en structures binaires** à ceux qui consomment ses
-  données (le shell reçoit des `TouchEvent`, la pile réseau des trames).
+  données (le compositeur reçoit des `TouchEvent`, la pile réseau des trames).
 
 ## 2. Les quatre familles de pilotes
 
@@ -99,13 +99,13 @@ sorties) :
 
 | Programme | Fam. | Poignées de départ | Verbes (en plus de `état`, `résumé`) | Sorties |
 |---|---|---|---|---|
-| `usb` | A, C | 1 registres, 2 interruption, 3 DMA, 4 service, 5 journal, 6 vers `réseau`, 7 souris → shell | `liste`, `clé …`, `étude …`, `arrête` | trames `net::FRAME`, `MouseEvent` |
+| `usb` | A, C | 1 registres, 2 interruption, 3 DMA, 4 service, 5 journal, 6 vers `réseau`, 7 souris → compositeur | `liste`, `clé …`, `étude …`, `arrête` | trames `net::FRAME`, `MouseEvent` |
 | `wifi` | A | 1 registres (BAR 2), 2, 3, 4, 5, 6 vers `réseau-wifi` | `allume`, `scan`, `associe`, `connecte` (écran seul), `déconnecte`, `éteins`, `témoin`, `reprends` | trames `net::FRAME` |
 | `disque` | A | 1 registres, 3 DMA, 4 service, 5 journal | `débit`, `liste`, `fichier`, `fichiers …`, `installe` (racine seul) | — |
-| `graphique` | A | 1 registres et GGTT, 2, 3, 4, 5, 6 canal du curseur (depuis le shell) | `luminosité`, `ddb`, `reg`, `ggtt`, `curseur essai`, `blitter`, `arrête` | — |
+| `graphique` | A | 1 registres et GGTT, 2, 3, 4, 5, 6 canal du curseur (depuis le compositeur) | `luminosité`, `ddb`, `reg`, `ggtt`, `curseur essai`, `blitter`, `arrête` | — |
 | `son` | A, B | 1 HDA, 2, 3, 4, 5, 6 DSP (BAR 4), 7 page GPIO, 8 contrôleur I2C du casque | `démarre`, `bip`, `joue`, `gamme`, `volume`, `casque …`, `reg`, `dsp`, `vidage`, `arrête` | — |
-| `pavé` | B | 1 registres du contrôleur I2C, 2 son interruption, 3 service, 4 journal, 5 interruption du pavé, 6 évènements → shell | `essai`, `init`, `doigts [s]` | `TouchEvent` |
-| `clavier` | D | 1 interruption, 2 ports, 3 évènements → shell, 4 réglages, 5 journal | — | `KeyEvent` |
+| `pavé` | B | 1 registres du contrôleur I2C, 2 son interruption, 3 service, 4 journal, 5 interruption du pavé, 6 évènements → compositeur | `essai`, `init`, `doigts [s]` | `TouchEvent` |
+| `clavier` | D | 1 interruption, 2 ports, 3 évènements → compositeur, 4 réglages, 5 journal | — | `KeyEvent` |
 | `énergie` | D | 1 ports (lecture), 2 service, 3 journal, 4 tuile | `ligne`, `zéro` | la tuile Batterie |
 
 ## 3. Le contrat d'un programme pilote
@@ -118,13 +118,13 @@ sorties) :
   link-arg=-T<chemin>/user.ld"`, `cargo build --release --target
   x86_64-unknown-none`. Profil : `panic = "abort"`, `lto = true`,
   `codegen-units = 1`, `opt-level = "s"`.
-- Dépendances : la bibliothèque des programmes **`aiwos-rt`** (qui
-  dépend de `aiwos-abi`, le contrat avec le noyau), et la bibliothèque
-  des pilotes **`aiwos-pilote`** (§ 9.1), qui ne dépend que d'elle. Le script d'édition
+- Dépendances : la bibliothèque des programmes **`holarch-rt`** (qui
+  dépend de `holarch-abi`, le contrat avec le noyau), et la bibliothèque
+  des pilotes **`holarch-pilote`** (§ 9.1), qui ne dépend que d'elle. Le script d'édition
   des liens `user.ld` place le programme à **0x400000**, un segment par
   droit : code `R-X`, constantes `R--`, données `RW-` (W^X : aucune page
   à la fois modifiable et exécutable).
-- Point d'entrée : `aiwos_rt::entry!(main);`. Une panique termine le
+- Point d'entrée : `holarch_rt::entry!(main);`. Une panique termine le
   programme (`process_abort`) : son message et sa ligne dans le source
   vont au journal, et un rapport de panne est gardé (§ 3.9). Écrire
   quand même au journal **avant** ce qui peut échouer : le rapport dit
@@ -132,9 +132,9 @@ sorties) :
 - Résultat : un exécutable ELF (18 Kio pour `clavier`, 41 pour `pavé`,
   180 pour `disque` ; `son` et `wifi` dépassent 500 Kio à cause du
   micrologiciel et des tables qu'ils embarquent). Le squelette du § 9.1
-  fait 19 Kio ; il ne demande que `aiwos-abi`, `aiwos-rt`,
-  `aiwos-pilote` et `user.ld`.
-- **Le nécessaire**, servi par Aiwos lui-même (`dev sdk`, `dev fichier
+  fait 19 Kio ; il ne demande que `holarch-abi`, `holarch-rt`,
+  `holarch-pilote` et `user.ld`.
+- **Le nécessaire**, servi par Holarch lui-même (`dev sdk`, `dev fichier
   <chemin>` ; l'outil `aiwos_sdk` du pont les rassemble et vérifie leurs
   empreintes) : ces quatre pièces, le squelette `modele`, un espace de
   travail qui contient tout, et `construire.sh` / `construire.ps1` (les
@@ -216,9 +216,9 @@ Le lire avant toute chose (squelette au § 9.1).
 
 Instruction `syscall` : numéro dans `rax`, arguments dans `rdi`, `rsi`,
 `rdx`, `r10`, `r8`, `r9` ; résultat dans `rax`, **négatif = erreur**.
-`aiwos-rt` les enveloppe (colonne de droite).
+`holarch-rt` les enveloppe (colonne de droite).
 
-| N° | Appel | Rôle | Dans `aiwos-rt` |
+| N° | Appel | Rôle | Dans `holarch-rt` |
 |---|---|---|---|
 | 0 | `journal_write` | une ligne au journal | `journal_write`, `log!` |
 | 1 | `handle_close` | fermer une poignée | `handle_close` |
@@ -247,7 +247,7 @@ Instruction `syscall` : numéro dans `rax`, arguments dans `rdi`, `rsi`,
 | 24 | `clock_unix` | heure UTC (s depuis 1970) | `clock_unix` |
 | 25 | `system_power` | redémarrer, éteindre (racine) | `system_power` |
 | 26 | `memory_unmap` | retirer une projection | `memory_unmap` |
-| 27 | `process_abort` | finir sur une panique : message au journal, rapport de panne | `process_abort` (le gestionnaire de panique d'`aiwos-rt`) |
+| 27 | `process_abort` | finir sur une panique : message au journal, rapport de panne | `process_abort` (le gestionnaire de panique d'`holarch-rt`) |
 | 25 | `system_power` | redémarrer, éteindre (racine) | `system_power` |
 | 26 | `memory_unmap` | retirer une projection | `memory_unmap` |
 
@@ -295,7 +295,7 @@ jamais de boucle sans échéance (squelette complet au § 9.1).
 
 - Un verbe qui **écrit sur le matériel** ou montre un secret doit être
   signalé : racine le refuse à la console distante (`« … » : réservé à
-  l'écran d'Aiwos.`).
+  l'écran de Holarch.`).
 
 ### 3.8 Les évènements
 
@@ -313,9 +313,10 @@ jamais de boucle sans échéance (squelette complet au § 9.1).
   et `height` = l'étendue logique de l'écran (le maximum des
   coordonnées) ; pour chaque doigt posé, `present = 1`, `x`, `y` dans
   cette étendue (origine en haut à gauche) ; `count` = doigts posés ;
-  `buttons` = 0. Le shell met la flèche **sous** le premier doigt posé,
-  et poser un doigt fait un clic gauche. Envoyer aussi l'évènement du
-  doigt levé (aucun doigt posé), sinon le shell croit le doigt resté.
+  `buttons` = 0. Le compositeur met la flèche **sous** le premier doigt
+  posé, et poser un doigt fait un clic gauche. Envoyer aussi l'évènement
+  du doigt levé (aucun doigt posé), sinon le compositeur croit le doigt
+  resté.
 - **Ne jamais attendre le consommateur** : si le canal est plein,
   compter l'évènement comme perdu et continuer. Compter les envoyés et
   les perdus, et les montrer dans `état` et `résumé`.
@@ -395,7 +396,7 @@ chacun touché 11 à 14 fichiers. La liste, dans l'ordre :
 | 5 | `programs/Cargo.toml` | le programme dans `members` ; `programs/<nom>/Cargo.toml` (copie de celui de `son`) |
 | 6 | `programs/racine/src/main.rs` | le champ dans `Resources` ; son cas dans `receive_resources` ; le lancement dans `start` (canal de service, premier message `DeviceResources`, poignées **dans l'ordre du § 3.3**) ; le champ dans `Services` ; la branche de `handle()` qui relaie `<nom> …` (délai, verbes refusés à distance) ; `arrête` dans les deux listes d'arrêt (redémarrage et relance) |
 | 7 | `programs/racine/src/materiel.rs` | la ligne du panneau (`driven(…)`) et la fiche (`sheet`) |
-| 8 | `crates/commandes/src/lib.rs` | **l'entrée de la commande** dans la table : syntaxe, sens, détail des demandes, ce qui est permis à distance (règles mot pour mot, la plus précise l'emporte), attente ; ajouter ses cas aux essais (`cargo test -p aiwos-commandes`) |
+| 8 | `crates/commandes/src/lib.rs` | **l'entrée de la commande** dans la table : syntaxe, sens, détail des demandes, ce qui est permis à distance (règles mot pour mot, la plus précise l'emporte), attente ; ajouter ses cas aux essais (`cargo test -p holarch-commandes`) |
 
 Depuis IA0, la table des commandes donne l'aide de l'écran et celle de
 la console distante (`aide`, `aide <commande>`), le filtre de la console
@@ -410,7 +411,7 @@ vers son consommateur (étapes 6 à 9).
 
 ## 5. La méthode, étape par étape
 
-Chaque pilote d'Aiwos a été écrit en **étapes courtes**, chacune
+Chaque pilote de Holarch a été écrit en **étapes courtes**, chacune
 compilée, envoyée, essayée sur la machine et validée par l'utilisateur
 avant la suivante (P1 à P6 pour le pavé, G1 à G4 pour le graphique, S1 à
 S5 et H1 à H3 pour le son). Presque toutes ont marché **au premier
@@ -423,19 +424,19 @@ ensuite au démarrage.**
 
 **But** : la fiche d'identité complète de l'appareil (modèle au § 9.2).
 
-À demander à Aiwos :
+À demander à Holarch :
 
 | Commande | Ce qu'elle apprend |
 |---|---|
 | `matériel panneau` | les appareils, leur pilote (« — » : aucun), leur état ; la **clé** de chacun (`sd`, `tactile`, `usb:6`…) |
-| `matériel fiche <clé>` | ce qu'Aiwos sait d'un appareil ; clés stables aussi : `pci:00:14.5`, `acpi:\_SB.PCI0.I2C2.H05D`, `usb:6` |
+| `matériel fiche <clé>` | ce que Holarch sait d'un appareil ; clés stables aussi : `pci:00:14.5`, `acpi:\_SB.PCI0.I2C2.H05D`, `usb:6` |
 | `matériel tout [tsv]` | tous les périphériques PCI : bus:appareil.fonction, fabricant:modèle, genre |
 | `matériel pci <bb:dd.f>` | la fiche PCI : identifiants, classe, sous-système, commande et état, **zones (BAR) mesurées au démarrage** (adresse, taille, genre), broche et ligne, capacités décodées (énergie D0-D3, MSI, MSI-X et sa table, PCIe et son lien), capacités étendues ; l'appareil ACPI qui le décrit |
 | `matériel pci <bb:dd.f> config` | l'espace de configuration en hexadécimal (4 Kio avec la table MCFG ; numéro de série masqué) |
 | `matériel acpi` | les appareils des tables ACPI sur un bus série ou une broche GPIO : `_HID`, `_CID`, bus et adresse, vitesse, interruption (ligne, front ou niveau), broches GPIO |
 | `matériel acpi appareils` | tous les appareils ACPI, en colonnes : chemin, table, `_HID`, `_CID`, `_UID`, `_ADR`, `_DDN`, `_STA`, `_CRS` |
 | `matériel acpi <chemin\|nom\|_HID>` | la fiche d'un appareil ACPI : toutes ses valeurs fixes (`_DSD`, `_PRx`…), `_CRS` décodé, ses méthodes et leurs arguments, son parent et son `_ADR`, ce qu'il contient (sources d'alimentation…) |
-| `matériel acpi tables`, outil `aiwos_export(dossier)` | la liste des tables ; toutes écrites sur le PC (`dsdt.dat`, `ssdt1.dat`…), vérifiées, pour `iasl -d` : ce que **calculent** les méthodes (un `_CRS` calculé, l'alimentation `_PS0`/`_ON`, les broches GPIO de réinitialisation) ; Aiwos, lui, ne les exécute pas |
+| `matériel acpi tables`, outil `aiwos_export(dossier)` | la liste des tables ; toutes écrites sur le PC (`dsdt.dat`, `ssdt1.dat`…), vérifiées, pour `iasl -d` : ce que **calculent** les méthodes (un `_CRS` calculé, l'alimentation `_PS0`/`_ON`, les broches GPIO de réinitialisation) ; Holarch, lui, ne les exécute pas |
 | `matériel machine` | SMBIOS (fabricant, modèle, carte, micrologiciel ; jamais de numéro de série), processeur (CPUID : famille, modèle, fonctions), mémoire |
 | `usb` | les appareils USB : port, identifiants, classes des interfaces |
 | `usb descripteurs <port>` | tout ce que l'appareil dit de lui-même : fiche, configurations, interfaces, voies, descripteurs de classe (HID, UVC, son), descripteur de rapports HID, textes ; en octets et décodé, en lecture seule |
@@ -452,7 +453,7 @@ Puis chercher la documentation, dans cet ordre :
 2. **La fiche technique** du fabricant.
 3. **Le pilote Linux**, **lu comme une documentation** : on en tire
    l'ordre des opérations, les registres, les pièges (souvent commentés).
-   Chaque fonction d'Aiwos **cite la fonction Linux** dont elle vient
+   Chaque fonction de Holarch **cite la fonction Linux** dont elle vient
    (« `rtw_mac_power_on` »). Le code sous GPL **ne se recopie pas** : il
    se réécrit d'après ce qu'il fait. Les tables sous licence BSD
    (Realtek) peuvent être reprises, en le notant dans les licences.
@@ -478,7 +479,7 @@ qui choisit.
 - **Aucune écriture** sur le matériel. Aucune au démarrage non plus.
 
 **Réussite** : les valeurs lues ont un sens (identifiants attendus,
-version conforme à la norme, pas de `0xFFFFFFFF`), et le reste d'Aiwos
+version conforme à la norme, pas de `0xFFFFFFFF`), et le reste de Holarch
 n'a pas bougé. Exemples : `son` S1 (HDA 1.0, 6 sorties, DSP à 2 cœurs),
 `graphique` G1 (1920 × 1080 à 60,003 Hz), `pavé` P2 (descripteur lu en
 1 ms).
@@ -563,8 +564,8 @@ mesures dans le journal du projet.
    sur le PC de l'utilisateur, hors du dépôt.
 2. **Demander l'accord** de l'utilisateur **avant chaque envoi**, puis
    `aiwos_mise_a_jour`.
-3. L'utilisateur tape `mise-à-jour` puis Entrée **sur l'écran d'Aiwos**.
-   Aiwos se relance **en mémoire** (paquet `--noyau-seul`) ou écrit la
+3. L'utilisateur tape `mise-à-jour` puis Entrée **sur l'écran de Holarch**.
+   Holarch se relance **en mémoire** (paquet `--noyau-seul`) ou écrit la
    version sur le disque puis se relance. La console distante revient
    seule en 10 à 20 s : attendre, vérifier `aiwos_etat`, puis renvoyer
    la commande (une commande envoyée avant « session reprise » se perd).
@@ -574,7 +575,7 @@ mesures dans le journal du projet.
 5. **Pour un changement risqué au démarrage** : d'abord en mémoire
    (l'arrêt ramène la version du disque), le disque ensuite. Après une
    version qui plante, installer la correction **deux fois** (une
-   installation range l'ancienne en `ancien.efi`, l'entrée « Aiwos
+   installation range l'ancienne en `ancien.efi`, l'entrée « Holarch
    (précédent) » du menu).
 6. **Valider** : une étape = un commit (« …, P3 : … (à valider) »), puis
    une entrée datée du journal du projet : ce qui est fait, un tableau
@@ -585,12 +586,12 @@ mesures dans le journal du projet.
 
 Non négociables : elles viennent de l'utilisateur ou d'incidents.
 
-0. **Le fil rouge : rien n'est appliqué sans qu'Aiwos l'ait validé**,
+0. **Le fil rouge : rien n'est appliqué sans que Holarch l'ait validé**,
    de bout en bout. Valider, c'est : **vérifier** (qui envoie,
    signature, forme, cohérence avec le matériel), **borner** (les plus
    petits droits, imposés par le matériel : registres projetés en
    lecture seule, « bus master » coupé, plus tard l'IOMMU), **faire
-   accepter** à l'écran ce qu'Aiwos a calculé, **tracer** et pouvoir
+   accepter** à l'écran ce que Holarch a calculé, **tracer** et pouvoir
    reprendre. Un pilote venu de l'extérieur commence au niveau
    « lecture » (une écriture est une faute : le pilote est arrêté), monte
    à « écriture » sur un nouvel accord, et n'aura le DMA qu'avec l'IOMMU.
@@ -639,9 +640,9 @@ Non négociables : elles viennent de l'utilisateur ou d'incidents.
 
 ### 9.1 Le squelette d'un pilote (famille A, étape 1)
 
-C'est `programs/modele`, compilé à chaque construction d'Aiwos (jamais
+C'est `programs/modele`, compilé à chaque construction de Holarch (jamais
 embarqué) : ce texte en est la copie exacte. Il s'appuie sur la
-bibliothèque des pilotes, **`aiwos-pilote`** (`programs/pilote`), qui ne
+bibliothèque des pilotes, **`holarch-pilote`** (`programs/pilote`), qui ne
 fait que ce que décrit le § 3 :
 
 | Élément | Rôle |
@@ -668,14 +669,14 @@ test = false
 bench = false
 
 [dependencies]
-aiwos-rt = { path = "../rt" }
-aiwos-pilote = { path = "../pilote" }
+holarch-rt = { path = "../rt" }
+holarch-pilote = { path = "../pilote" }
 ```
 
 `programs/<nom>/src/main.rs` :
 
 ```rust
-//! « modele » : le squelette d'un pilote d'Aiwos (famille A : un
+//! « modele » : le squelette d'un pilote de Holarch (famille A : un
 //! périphérique PCI à registres mémoire), à recopier pour en commencer un.
 //! Étape 1 du guide, « faire connaissance » : il lit, il n'écrit rien sur
 //! le matériel. Compilé à chaque construction, jamais embarqué : il ne
@@ -689,8 +690,8 @@ aiwos-pilote = { path = "../pilote" }
 
 use core::fmt::Write;
 
-use aiwos_pilote::{Dma, Mmio, Reply, Served, parse_hex, respond, summary};
-use aiwos_rt::{self as rt, DeviceResources, FOREVER, Handle, log, signals};
+use holarch_pilote::{Dma, Mmio, Reply, Served, parse_hex, respond, summary};
+use holarch_rt::{self as rt, DeviceResources, FOREVER, Handle, log, signals};
 
 const MMIO: Handle = Handle(1);
 const IRQ: Handle = Handle(2);
@@ -751,7 +752,7 @@ impl Driver {
 }
 
 fn main() {
-    let Some(info) = aiwos_pilote::resources(SERVICE) else {
+    let Some(info) = holarch_pilote::resources(SERVICE) else {
         log!(JOURNAL, "pas de description du périphérique");
         return;
     };
@@ -793,12 +794,12 @@ rt::entry!(main);
 ```
 
 Pour une famille B, remplacer la poignée 3 par l'interruption de
-l'appareil, et parler au bus par `aiwos_pilote::i2c`.
+l'appareil, et parler au bus par `holarch_pilote::i2c`.
 
 ### 9.2 La fiche d'identité d'un appareil (étape 0)
 
 ```text
-Appareil        : <nom lisible>                clé Aiwos : <clé du panneau>
+Appareil        : <nom lisible>                clé Holarch : <clé du panneau>
 Famille         : A | B | C | D
 Identité        : PCI <bb:dd.f> <fabricant:modèle> classe <cc ss pi>
                   ou ACPI <chemin> _HID <…> _CID <…> sur <bus> <contrôleur>, adresse <…>, <kHz>
@@ -809,7 +810,7 @@ Ressources      : BAR <n> (<taille>), interruption <MSI|MSI-X|ligne n, front/niv
 Documentation   : norme <…> ; fiche technique <…> ; pilote Linux <fichier> (fonctions : …) ;
                   coreboot <fichier> ; licences
 Micrologiciel   : aucun | <nom, origine, licence, accord de l'utilisateur>
-Consommateur    : shell (évènements <structure>) | pile réseau | système de fichiers | …
+Consommateur    : compositeur (évènements <structure>) | pile réseau | système de fichiers | …
 Risques         : ce qui peut mal tourner (DMA, alimentation, bus partagé, appareil déjà utilisé)
 Étapes          : 1 … 6, chacune avec son critère de réussite mesurable
 ```
@@ -884,11 +885,11 @@ Elle ne peut **ni charger** son pilote (il est embarqué dans le noyau,
 qui se signe avec une clé qu'elle n'a pas), **ni lire les registres**
 d'un appareil sans pilote.
 
-**Demain** (feuille de route [10](10-aiwos-interrogeable.md)) : Aiwos
+**Demain** (feuille de route [10](10-holarch-interrogeable.md)) : Holarch
 décrit son matériel en détail, prête une **sonde** pour lire les
 registres d'un appareil (après accord à l'écran, registres en lecture
 seule), et accepte un **pilote chargé à chaud** : signé, vérifié par
-Aiwos, borné à son niveau
+Holarch, borné à son niveau
 par le matériel, accepté à l'écran, en mémoire d'abord, sans toucher au
 noyau. La méthode du § 5 ne change pas, elle suit les niveaux : étape 1
 au niveau « lecture », étapes 2 à 5 au niveau « écriture » (le DMA après

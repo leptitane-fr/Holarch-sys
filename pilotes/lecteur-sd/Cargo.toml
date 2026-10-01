@@ -9,5 +9,5 @@ test = false
 bench = false
 
 [dependencies]
-aiwos-rt = { path = "../rt" }
-aiwos-pilote = { path = "../pilote" }
+holarch-rt = { path = "../rt" }
+holarch-pilote = { path = "../pilote" }

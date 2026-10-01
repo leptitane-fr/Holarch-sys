@@ -1,5 +1,5 @@
 # Clés d'attestation reconnues (Ed25519, 32 octets en hexadécimal).
 # Seules ces machines peuvent attester qu'un pilote est « fonctionnel ».
-# Chaque clé est créée par Aiwos sur la machine ; sa partie privée n'en sort jamais.
+# Chaque clé est créée par Holarch sur la machine ; sa partie privée n'en sort jamais.
 
 chromebook-hp-x360-14b = 17e9eab6266b7bb2253b6cb8cfece3546c80433962d85d9c793a0ff7cafc2489

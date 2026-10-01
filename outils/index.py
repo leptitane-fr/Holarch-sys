@@ -40,7 +40,7 @@ def rapport(path, known):
 
 def build():
     known = machines()
-    lines = ["# Index d'aiwos-pilotes, recalculé par outils/index.py (ne pas écrire à la main).", ""]
+    lines = ["# Index de Holarch-sys, recalculé par outils/index.py (ne pas écrire à la main).", ""]
     for d in sorted((ROOT / "demandes").iterdir()):
         if d.is_dir():
             lines.append(f"demande {d.name} : {champs(d / 'demande.txt').get('état', '?')}")
@@ -53,7 +53,7 @@ def build():
         for e in essais:
             f, machine = rapport(e, known)
             lines.append(f"pilote {p.name} : en essai, attesté par {machine} ({f['niveau']}, pannes {f['état'].split('pannes = ')[-1]}) : "
-                         f"ELF {f['empreinte-elf'][:16]}…, Aiwos {f['aiwos']}")
+                         f"ELF {f['empreinte-elf'][:16]}…, Holarch {f['aiwos']}")
     return "\n".join(lines) + "\n"
 
 

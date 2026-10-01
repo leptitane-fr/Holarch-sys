@@ -11,11 +11,11 @@
 
 use core::fmt::Write;
 
-use aiwos_pilote::{Dma, Mmio, Reply, Served, parse_hex, respond, summary};
-use aiwos_rt::{self as rt, DeviceResources, Handle, log, signals};
+use holarch_pilote::{Dma, Mmio, Reply, Served, parse_hex, respond, summary};
+use holarch_rt::{self as rt, DeviceResources, Handle, log, signals};
 
 // Le manifeste (IA6). Niveau lecture : aucune écriture sur le matériel.
-aiwos_pilote::pilote!("nom = lecteur-sd
+holarch_pilote::pilote!("nom = lecteur-sd
 version = 2
 abi = 1
 appareil = pci 8086:4df8
@@ -177,7 +177,7 @@ fn card_words(ps: u32) -> (&'static str, &'static str, &'static str) {
 }
 
 fn main() {
-    let Some(info) = aiwos_pilote::resources(SERVICE) else {
+    let Some(info) = holarch_pilote::resources(SERVICE) else {
         log!(JOURNAL, "pas de description du périphérique");
         return;
     };

@@ -3,7 +3,7 @@
 > ## Avant de proposer : à vérifier, sans exception
 >
 > Ces points ont fait échouer les premiers pilotes proposés. Chacun est
-> vérifié par Aiwos ou par la construction : un seul manqué, et le
+> vérifié par Holarch ou par la construction : un seul manqué, et le
 > pilote est refusé.
 >
 > **1. `Cargo.toml` : chemins `../rt` et `../pilote`, jamais autre chose.**
@@ -13,8 +13,8 @@
 >
 > ```toml
 > [dependencies]
-> aiwos-rt = { path = "../rt" }
-> aiwos-pilote = { path = "../pilote" }
+> holarch-rt = { path = "../rt" }
+> holarch-pilote = { path = "../pilote" }
 > ```
 >
 > Faux (vu depuis le dépôt, mais Cargo refuse) : `../../sdk/programs/rt`.
@@ -35,7 +35,7 @@
 > description = Ce que fait le pilote, en une phrase
 > ```
 >
-> Faux (Aiwos refuse : « ligne sans « = » ») : `ressources = bar 0`
+> Faux (Holarch refuse : « ligne sans « = » ») : `ressources = bar 0`
 > puis `interruption` seul sur la ligne suivante.
 >
 > **3. Ce qu'un pilote chargé reçoit aujourd'hui, et rien de plus.**
@@ -86,7 +86,7 @@
 > numéro de série, un UUID.
 >
 > **8. Ni assembleur, ni `unsafe` pour toucher au matériel.** Tout passe
-> par `Mmio` (`aiwos-pilote`) ou les appels d'`aiwos-rt`. Une
+> par `Mmio` (`holarch-pilote`) ou les appels d'`holarch-rt`. Une
 > instruction `in`/`out` écrite à la main est arrêtée par le processeur.
 >
 > **Ce qu'on n'a pas besoin de faire** : borner `reg <adresse>` (`Mmio`
@@ -97,7 +97,7 @@
 >
 > **Où déposer** : `pilotes/<nom>/` (`Cargo.toml`, `src/`, `ORIGINE.txt`),
 > par une demande de fusion. `essais/` est réservé aux rapports signés
-> par Aiwos. `<nom>` : minuscules, chiffres et tirets, 24 caractères au
+> par Holarch. `<nom>` : minuscules, chiffres et tirets, 24 caractères au
 > plus, le même dans `Cargo.toml` et le manifeste. Exemples :
 > `pilotes/ahci`, `pilotes/e1000e`, `pilotes/affichage-gen9`.
 
@@ -127,9 +127,9 @@
    binaire, pas de script qui s'exécute à la construction (`build.rs`
    refusé), pas de dépendance hors de `sdk/`.
 
-Commencez au niveau **lecture** (étape 1 du guide) : Aiwos accorde
+Commencez au niveau **lecture** (étape 1 du guide) : Holarch accorde
 l'écriture ensuite, par un second accord à l'écran. Un pilote qui écrit
 alors qu'il n'a que la lecture est arrêté par le processeur.
 
-Tout texte d'un pilote (description, réponses) est présenté par Aiwos
+Tout texte d'un pilote (description, réponses) est présenté par Holarch
 **comme le texte de son auteur**, jamais comme une vérité.

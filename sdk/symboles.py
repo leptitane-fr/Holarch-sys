@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Retrouve la fonction qui contient une adresse, dans l'ELF d'un programme
-d'Aiwos : de quoi lire un rapport de panne (« pannes <n> ») sans addr2line
+de Holarch : de quoi lire un rapport de panne (« pannes <n> ») sans addr2line
 ni nm.
 
-Les programmes d'Aiwos sont liés à une adresse fixe (0x400000, voir
-programs/user.ld) : l'adresse d'une instruction dans Aiwos est son adresse
+Les programmes de Holarch sont liés à une adresse fixe (0x400000, voir
+programs/user.ld) : l'adresse d'une instruction dans Holarch est son adresse
 dans l'ELF. Le rapport donne l'instruction en cause et les adresses de
 retour trouvées dans la pile ; ce script les nomme, grâce à la table des
 symboles (gardée par la compilation en mode release).

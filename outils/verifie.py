@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Vérifie un rapport d'essai signé par Aiwos (essais/<pilote>/*.txt).
+"""Vérifie un rapport d'essai signé par Holarch (essais/<pilote>/*.txt).
 
 La signature Ed25519 porte sur tout ce qui précède la ligne
 « attestation = » ; la clé doit être l'une de cles/attestation.txt.

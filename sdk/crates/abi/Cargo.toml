@@ -1,5 +1,5 @@
 [package]
-name = "aiwos-abi"
+name = "holarch-abi"
 version.workspace = true
 edition.workspace = true
 

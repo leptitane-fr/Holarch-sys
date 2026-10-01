@@ -1,4 +1,4 @@
-# Compile les programmes du nécessaire (modele, et les vôtres) pour Aiwos,
+# Compile les programmes du nécessaire (modele, et les vôtres) pour Holarch,
 # sous Windows : la même chose que construire.sh.
 #
 # Usage : pwsh construire.ps1 [options de cargo]
