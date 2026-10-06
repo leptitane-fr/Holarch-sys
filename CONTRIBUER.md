@@ -100,6 +100,11 @@
 > par Holarch. `<nom>` : minuscules, chiffres et tirets, 24 caractères au
 > plus, le même dans `Cargo.toml` et le manifeste. Exemples :
 > `pilotes/ahci`, `pilotes/e1000e`, `pilotes/affichage-gen9`.
+>
+> **Pour paraître dans la Bibliothèque de Holarch** : ajouter
+> `vitrine.txt` (`nom`, `catégorie` parmi Pilotes, Système, Réseau,
+> Sécurité, `cible`, `résumé`, `version`, `icône`, `captures` facultatif),
+> `description.txt` et `icone.svg`, puis `python outils/catalogue.py`.
 
 1. **Choisir une demande** dans `demandes/<clé>/` : lire `fiche.txt`
    (l'appareil) et `demande.txt` (ce qui est permis).

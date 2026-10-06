@@ -1,0 +1,6 @@
+nom = Lecteur de carte SD
+catégorie = Pilotes
+cible = Holarch System
+résumé = Détecte la carte SD et sa protection en écriture (contrôleur SDHCI).
+version = 0.2.0
+icône = icone.svg

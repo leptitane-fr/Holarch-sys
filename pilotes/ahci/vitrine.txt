@@ -1,0 +1,6 @@
+nom = Contrôleur SATA AHCI
+catégorie = Pilotes
+cible = Holarch System
+résumé = Lit les registres du contrôleur SATA d'Intel en mode AHCI ou RAID/RST.
+version = 0.1.0
+icône = icone.svg
