@@ -103,7 +103,8 @@
 >
 > **Pour paraître dans la Bibliothèque de Holarch** : ajouter
 > `vitrine.txt` (`nom`, `catégorie` parmi Pilotes, Système, Réseau,
-> Sécurité, `cible`, `résumé`, `version`, `icône`, `captures` facultatif),
+> Sécurité, `cible`, `résumé`, `version`, `icône`, `captures` et `éditeur`
+> facultatifs ; seuls les pilotes de la plateforme de l'appareil y paraissent),
 > `description.txt` et `icone.svg`, puis `python outils/catalogue.py`.
 
 1. **Choisir une demande** dans `demandes/<clé>/` : lire `fiche.txt`

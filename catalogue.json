@@ -1,5 +1,6 @@
 {
  "format": 1,
+ "editeurs": {},
  "holons": [
   {
    "id": "affichage-gen9",
@@ -19,6 +20,8 @@
    "auteur": "Vibe Code (Mistral AI), première version ; revu et corrigé par Claude (Anthropic) : registres inventés (« DEVEN » en 0x0, 0x2000, 0x20D0) remplacés par ceux de l'affichage, PIPE_A en 0x70008 (0x70000 est le compteur de lignes)",
    "etat": "proposé",
    "socle": false,
+   "editeur": null,
+   "modes": [],
    "icone": "pilotes/affichage-gen9/icone.svg",
    "captures": [],
    "source": "pilotes/affichage-gen9"
@@ -41,6 +44,8 @@
    "auteur": "Vibe Code (Mistral AI), première version ; revu et corrigé par Claude (Anthropic) : BAR 5 au lieu de 0, décodage des champs, signatures",
    "etat": "proposé",
    "socle": false,
+   "editeur": null,
+   "modes": [],
    "icone": "pilotes/ahci/icone.svg",
    "captures": [],
    "source": "pilotes/ahci"
@@ -63,6 +68,8 @@
    "auteur": "Vibe Code (Mistral AI), première version ; revu et corrigé par Claude (Anthropic) : vitesse lue dans STATUS (bits 7:6), adresse MAC retirée, registre 0x1C inventé retiré",
    "etat": "proposé",
    "socle": false,
+   "editeur": null,
+   "modes": [],
    "icone": "pilotes/e1000e/icone.svg",
    "captures": [],
    "source": "pilotes/e1000e"
@@ -85,6 +92,8 @@
    "auteur": "Grok (xAI), version 2, 27/09/2026 ; version 1 : Claude (Anthropic), agent de l'épreuve à l'aveugle du 27/09/2026, sans accès au dépôt d'Aiwos",
    "etat": "en essai, attesté par chromebook-hp-x360-14b (BAR 0 en lecture, pannes 0) : ELF 2c7ad6ea5fd8c0bb…, Holarch construite le 27/09/2026 à 14:58 (UTC)",
    "socle": false,
+   "editeur": null,
+   "modes": [],
    "icone": "pilotes/lecteur-sd/icone.svg",
    "captures": [],
    "source": "pilotes/lecteur-sd"
