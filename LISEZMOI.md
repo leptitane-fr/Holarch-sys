@@ -36,7 +36,8 @@ l'accord de son utilisateur **devant l'écran**, puis publie le résultat.
 | `pilotes/` | les pilotes proposés |
 | `essais/` | les rapports d'essai signés par Holarch |
 | `cles/` | les clés publiques d'attestation reconnues |
-| `outils/` | `construire.sh <nom>` (empreinte reproductible), `verifie.py <rapport>` (signature), `index.py` (l'index, recalculé) |
+| `outils/` | `construire.sh <nom>` (empreinte reproductible), `verifie.py <rapport>` (signature), `index.py` (l'index, recalculé), `catalogue.py` (le catalogue de la Bibliothèque) |
+| `catalogue.json` | la vitrine des pilotes pour la Bibliothèque de Holarch, recalculée par `outils/catalogue.py` depuis `vitrine.txt`, `description.txt` et `icone.svg` de chaque pilote |
 | `index.txt` | l'état de chaque demande et de chaque pilote, recalculé depuis les rapports signés |
 
 ## Déjà réussi

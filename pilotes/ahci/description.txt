@@ -1,0 +1,3 @@
+Le contrôleur SATA d'Intel en mode AHCI ou RAID/RST (8086:282a). Pilote écrit pour un Dell Latitude 7490.
+
+Étape 1 du guide, « faire connaissance » : le pilote lit les registres AHCI (dans la BAR 5, « ABAR ») et n'écrit rien sur le matériel.

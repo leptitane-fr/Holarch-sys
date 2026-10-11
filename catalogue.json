@@ -1,0 +1,102 @@
+{
+ "format": 1,
+ "editeurs": {},
+ "holons": [
+  {
+   "id": "affichage-gen9",
+   "genre": "Holon-sys",
+   "nom": "Affichage Intel HD Graphics 620",
+   "categorie": "Pilotes",
+   "cibles": [
+    "Holarch System"
+   ],
+   "resume": "Lit l'état de l'affichage allumé par le firmware : pipe, plan, écran, rétroéclairage.",
+   "description": [
+    "Le processeur graphique Intel HD Graphics 620 (8086:5916, génération 9, Kaby Lake). Pilote écrit pour un Dell Latitude 7490.",
+    "Étape 1 du guide, « faire connaissance » : le pilote lit l'état de l'affichage que le firmware a allumé (pipe A, plan 1, écran, rétroéclairage) et n'écrit rien sur le matériel."
+   ],
+   "version": "0.1.0",
+   "licence": "MIT",
+   "auteur": "Vibe Code (Mistral AI), première version ; revu et corrigé par Claude (Anthropic) : registres inventés (« DEVEN » en 0x0, 0x2000, 0x20D0) remplacés par ceux de l'affichage, PIPE_A en 0x70008 (0x70000 est le compteur de lignes)",
+   "etat": "proposé",
+   "socle": false,
+   "editeur": null,
+   "modes": [],
+   "icone": "pilotes/affichage-gen9/icone.svg",
+   "captures": [],
+   "source": "pilotes/affichage-gen9"
+  },
+  {
+   "id": "ahci",
+   "genre": "Holon-sys",
+   "nom": "Contrôleur SATA AHCI",
+   "categorie": "Pilotes",
+   "cibles": [
+    "Holarch System"
+   ],
+   "resume": "Lit les registres du contrôleur SATA d'Intel en mode AHCI ou RAID/RST.",
+   "description": [
+    "Le contrôleur SATA d'Intel en mode AHCI ou RAID/RST (8086:282a). Pilote écrit pour un Dell Latitude 7490.",
+    "Étape 1 du guide, « faire connaissance » : le pilote lit les registres AHCI (dans la BAR 5, « ABAR ») et n'écrit rien sur le matériel."
+   ],
+   "version": "0.1.0",
+   "licence": "MIT",
+   "auteur": "Vibe Code (Mistral AI), première version ; revu et corrigé par Claude (Anthropic) : BAR 5 au lieu de 0, décodage des champs, signatures",
+   "etat": "proposé",
+   "socle": false,
+   "editeur": null,
+   "modes": [],
+   "icone": "pilotes/ahci/icone.svg",
+   "captures": [],
+   "source": "pilotes/ahci"
+  },
+  {
+   "id": "e1000e",
+   "genre": "Holon-sys",
+   "nom": "Ethernet Intel I219-LM",
+   "categorie": "Pilotes",
+   "cibles": [
+    "Holarch System"
+   ],
+   "resume": "Lit l'état du lien réseau filaire : branché, vitesse, duplex.",
+   "description": [
+    "La carte Ethernet Intel I219-LM (8086:15d7). Pilote écrit pour un Dell Latitude 7490.",
+    "Étape 1 du guide, « faire connaissance » : le pilote lit l'état du lien (branché, vitesse, duplex) et n'écrit rien sur le matériel. L'adresse MAC n'est jamais lue ni montrée, car elle identifie la machine."
+   ],
+   "version": "0.1.0",
+   "licence": "MIT",
+   "auteur": "Vibe Code (Mistral AI), première version ; revu et corrigé par Claude (Anthropic) : vitesse lue dans STATUS (bits 7:6), adresse MAC retirée, registre 0x1C inventé retiré",
+   "etat": "proposé",
+   "socle": false,
+   "editeur": null,
+   "modes": [],
+   "icone": "pilotes/e1000e/icone.svg",
+   "captures": [],
+   "source": "pilotes/e1000e"
+  },
+  {
+   "id": "lecteur-sd",
+   "genre": "Holon-sys",
+   "nom": "Lecteur de carte SD",
+   "categorie": "Pilotes",
+   "cibles": [
+    "Holarch System"
+   ],
+   "resume": "Détecte la carte SD et sa protection en écriture (contrôleur SDHCI).",
+   "description": [
+    "Le lecteur de carte SD (contrôleur SDHCI, PCI 8086:4df8). Pilote essayé sur un Chromebook HP x360 14b.",
+    "Version 2, en lecture seule : le pilote surveille la présence de la carte toutes les 200 ms (registre Present State) et sa protection en écriture. Écrit « à l'aveugle » par une IA qui ne connaissait que ce que Holarch lui servait."
+   ],
+   "version": "0.2.0",
+   "licence": "MIT",
+   "auteur": "Grok (xAI), version 2, 27/09/2026 ; version 1 : Claude (Anthropic), agent de l'épreuve à l'aveugle du 27/09/2026, sans accès au dépôt d'Aiwos",
+   "etat": "en essai, attesté par chromebook-hp-x360-14b (BAR 0 en lecture, pannes 0) : ELF 2c7ad6ea5fd8c0bb…, Holarch construite le 27/09/2026 à 14:58 (UTC)",
+   "socle": false,
+   "editeur": null,
+   "modes": [],
+   "icone": "pilotes/lecteur-sd/icone.svg",
+   "captures": [],
+   "source": "pilotes/lecteur-sd"
+  }
+ ]
+}

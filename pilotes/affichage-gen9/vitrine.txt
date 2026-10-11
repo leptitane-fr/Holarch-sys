@@ -1,0 +1,6 @@
+nom = Affichage Intel HD Graphics 620
+catégorie = Pilotes
+cible = Holarch System
+résumé = Lit l'état de l'affichage allumé par le firmware : pipe, plan, écran, rétroéclairage.
+version = 0.1.0
+icône = icone.svg

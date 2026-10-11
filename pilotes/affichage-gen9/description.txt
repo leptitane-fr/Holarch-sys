@@ -1,0 +1,3 @@
+Le processeur graphique Intel HD Graphics 620 (8086:5916, génération 9, Kaby Lake). Pilote écrit pour un Dell Latitude 7490.
+
+Étape 1 du guide, « faire connaissance » : le pilote lit l'état de l'affichage que le firmware a allumé (pipe A, plan 1, écran, rétroéclairage) et n'écrit rien sur le matériel.

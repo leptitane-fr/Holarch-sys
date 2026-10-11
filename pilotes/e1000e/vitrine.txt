@@ -1,0 +1,6 @@
+nom = Ethernet Intel I219-LM
+catégorie = Pilotes
+cible = Holarch System
+résumé = Lit l'état du lien réseau filaire : branché, vitesse, duplex.
+version = 0.1.0
+icône = icone.svg
